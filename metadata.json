@@ -1,0 +1,8 @@
+{
+  "name": "FLOWTYM",
+  "description": "Mobile-first hotel operations and HR management platform for staff pointage, housekeeping, and performance tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
