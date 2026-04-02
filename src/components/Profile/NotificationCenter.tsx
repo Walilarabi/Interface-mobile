@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Bell, Clock, Briefcase, Trophy, CheckCircle2 } from 'lucide-react';
+import { Bell, Clock, Briefcase, Trophy, CheckCircle2, Megaphone } from 'lucide-react';
 import { Notification } from '@/src/types';
 import { cn } from '@/src/lib/utils';
 
@@ -10,6 +10,7 @@ export const NotificationCenter = () => {
     { id: '2', user_id: 'u1', title: 'Demande approuvée', body: 'Votre demande de jour OFF pour le 05/04 a été validée.', read: true, type: 'rh', created_at: '2026-03-31T14:20:00Z' },
     { id: '3', user_id: 'u1', title: 'Nouvelle mission', body: '3 nouvelles chambres VIP ont été ajoutées à votre planning.', read: true, type: 'housekeeping', created_at: '2026-03-31T09:00:00Z' },
     { id: '4', user_id: 'u1', title: 'Badge obtenu !', body: 'Félicitations, vous avez reçu le badge "Top Performer".', read: true, type: 'performance', created_at: '2026-03-30T17:00:00Z' },
+    { id: '5', user_id: 'u1', title: 'Alerte Direction', body: 'Réunion d\'urgence pour tout le staff à 15h en salle de repos.', read: false, type: 'broadcast', created_at: '2026-04-02T12:00:00Z' },
   ];
 
   const getIcon = (type: string) => {
@@ -18,6 +19,7 @@ export const NotificationCenter = () => {
       case 'rh': return <CheckCircle2 size={16} />;
       case 'housekeeping': return <Briefcase size={16} />;
       case 'performance': return <Trophy size={16} />;
+      case 'broadcast': return <Megaphone size={16} />;
       default: return <Bell size={16} />;
     }
   };
@@ -28,6 +30,7 @@ export const NotificationCenter = () => {
       case 'rh': return 'bg-green-50 text-green-600';
       case 'housekeeping': return 'bg-blue-50 text-blue-600';
       case 'performance': return 'bg-violet-light text-violet';
+      case 'broadcast': return 'bg-yellow-50 text-yellow-600';
       default: return 'bg-background text-text-secondary';
     }
   };

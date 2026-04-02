@@ -11,8 +11,7 @@ export const Housekeeping = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div 
-        className="px-6 py-4 flex items-center justify-between border-b border-border text-white transition-colors duration-500"
-        style={{ backgroundColor: activeHotel?.color || '#7C3AED' }}
+        className="px-6 py-4 flex items-center justify-between border-b border-border text-white transition-colors duration-500 bg-violet"
       >
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/')} className="active-tap">

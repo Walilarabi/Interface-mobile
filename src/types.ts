@@ -15,6 +15,8 @@ export interface Hotel {
   color: string;
   logo?: string;
   qr_code?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface User {
@@ -69,7 +71,7 @@ export interface Notification {
   title: string;
   body: string;
   read: boolean;
-  type: 'pointage' | 'rh' | 'housekeeping' | 'performance';
+  type: 'pointage' | 'rh' | 'housekeeping' | 'performance' | 'broadcast';
   created_at: string;
 }
 

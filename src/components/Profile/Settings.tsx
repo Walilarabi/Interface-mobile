@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Globe, Bell, Shield, Smartphone, ChevronRight, Check, Camera, Upload, User as UserIcon } from 'lucide-react';
+import { Globe, Bell, Shield, Smartphone, ChevronRight, Check, Camera, Upload, User as UserIcon, ConciergeBell, Coffee, Wrench, Briefcase } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/hooks/useAuth';
 
@@ -8,6 +8,62 @@ export const Settings = () => {
   const { user, updateUser } = useAuth();
   const [language, setLanguage] = useState('fr');
   const [notifications, setNotifications] = useState(true);
+  const [selectedChannels, setSelectedChannels] = useState<string[]>(['reception']);
+
+  // Shift logic: 09:00 - 17:00
+  const now = new Date();
+  const currentHour = now.getHours();
+  const isOnShift = currentHour >= 9 && currentHour < 17;
+
+  React.useEffect(() => {
+    if (isOnShift) {
+      setNotifications(true);
+    }
+  }, [isOnShift]);
+
+  const toggleChannel = (id: string) => {
+    setSelectedChannels(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(c => c !== id);
+      }
+      return [...prev, id];
+    });
+  };
+
+  const channels = [
+    { 
+      id: 'reception', 
+      label: 'Réception', 
+      icon: ConciergeBell, 
+      color: 'text-blue-500', 
+      bg: 'bg-blue-50',
+      disabledBy: ['breakfast', 'maintenance', 'housekeeping']
+    },
+    { 
+      id: 'breakfast', 
+      label: 'Petit Déjeuner', 
+      icon: Coffee, 
+      color: 'text-orange-500', 
+      bg: 'bg-orange-50',
+      disabledBy: ['reception', 'maintenance']
+    },
+    { 
+      id: 'maintenance', 
+      label: 'Maintenance', 
+      icon: Wrench, 
+      color: 'text-red-500', 
+      bg: 'bg-red-50',
+      disabledBy: ['reception', 'breakfast']
+    },
+    { 
+      id: 'housekeeping', 
+      label: 'Housekeeping', 
+      icon: Briefcase, 
+      color: 'text-green-500', 
+      bg: 'bg-green-50',
+      disabledBy: ['reception']
+    },
+  ];
 
   const languages = [
     { id: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -113,35 +169,16 @@ export const Settings = () => {
         </div>
       </div>
 
-      {/* Language Section */}
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold text-text-secondary uppercase tracking-widest px-2">Langue de l'application</h3>
-        <div className="bg-surface rounded-[32px] card-shadow overflow-hidden divide-y divide-border">
-          {languages.map((lang) => (
-            <button 
-              key={lang.id}
-              onClick={() => setLanguage(lang.id)}
-              className="w-full px-6 py-4 flex items-center justify-between active-tap bg-surface"
-            >
-              <div className="flex items-center gap-4">
-                <span className="text-xl">{lang.flag}</span>
-                <span className={cn("text-sm font-medium", language === lang.id ? "text-violet font-bold" : "text-text-primary")}>
-                  {lang.label}
-                </span>
-              </div>
-              {language === lang.id && <Check size={18} className="text-violet" />}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Notifications Section */}
       <div className="space-y-4">
-        <h3 className="text-xs font-bold text-text-secondary uppercase tracking-widest px-2">Préférences</h3>
+        <h3 className="text-xs font-bold text-text-secondary uppercase tracking-widest px-2">Paramètres</h3>
         <div className="bg-surface rounded-[32px] card-shadow p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-violet-light flex items-center justify-center text-violet">
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                notifications ? "bg-violet-light text-violet" : "bg-background text-text-secondary"
+              )}>
                 <Bell size={20} />
               </div>
               <div>
@@ -149,18 +186,79 @@ export const Settings = () => {
                 <p className="text-[10px] text-text-secondary">Alertes de service, RH</p>
               </div>
             </div>
-            <button 
-              onClick={() => setNotifications(!notifications)}
-              className={cn(
-                "w-12 h-6 rounded-full transition-colors relative",
-                notifications ? "bg-violet" : "bg-border"
-              )}
+            <div className="flex flex-col items-end gap-1.5">
+              <button 
+                disabled={isOnShift}
+                onClick={() => setNotifications(!notifications)}
+                className={cn(
+                  "w-12 h-6 rounded-full transition-all relative",
+                  notifications ? "bg-violet" : "bg-border",
+                  isOnShift && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <motion.div 
+                  animate={{ x: notifications ? 26 : 4 }}
+                  className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
+                />
+              </button>
+            </div>
+          </div>
+
+          {isOnShift && (
+            <motion.div 
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-orange-50 border border-orange-100 p-3 rounded-2xl flex items-start gap-3"
             >
-              <motion.div 
-                animate={{ x: notifications ? 24 : 4 }}
-                className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
-              />
-            </button>
+              <div className="w-5 h-5 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 mt-0.5">
+                <Shield size={12} />
+              </div>
+              <p className="text-[9px] text-orange-700 font-medium leading-relaxed">
+                Les notifications sont obligatoires pendant votre service (09:00 - 17:00) pour garantir la réception des alertes critiques.
+              </p>
+            </motion.div>
+          )}
+
+          {/* Department Channels Selector */}
+          <div className="space-y-4 pt-2">
+            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Canaux par Département</p>
+            <div className="grid grid-cols-1 gap-2">
+              {channels.map((channel) => {
+                const isDisabled = channel.disabledBy.some(id => selectedChannels.includes(id));
+                const isSelected = selectedChannels.includes(channel.id);
+                
+                return (
+                  <button
+                    key={channel.id}
+                    disabled={isDisabled || !notifications}
+                    onClick={() => toggleChannel(channel.id)}
+                    className={cn(
+                      "flex items-center justify-between p-3 rounded-2xl border transition-all active-tap",
+                      isSelected 
+                        ? "bg-surface border-violet/30 shadow-sm" 
+                        : "bg-background border-transparent opacity-60",
+                      isDisabled && "opacity-30 grayscale cursor-not-allowed",
+                      !notifications && "opacity-20 pointer-events-none"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", channel.bg, channel.color)}>
+                        <channel.icon size={16} />
+                      </div>
+                      <span className={cn("text-xs font-bold", isSelected ? "text-text-primary" : "text-text-secondary")}>
+                        {channel.label}
+                      </span>
+                    </div>
+                    {isSelected && <Check size={16} className="text-violet" />}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedChannels.length === 0 && notifications && (
+              <p className="text-[9px] text-red-500 font-medium text-center">
+                Veuillez sélectionner au moins un canal pour recevoir les alertes.
+              </p>
+            )}
           </div>
 
           <div className="flex items-center justify-between opacity-50">

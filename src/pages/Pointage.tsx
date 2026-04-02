@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { QrCode, History, Calendar, LayoutGrid, PieChart, ChevronLeft, Menu, X as CloseIcon, ChevronRight } from 'lucide-react';
+import { Scan, History, Calendar, LayoutGrid, PieChart, ChevronLeft, Menu, X as CloseIcon, ChevronRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Scanner } from '@/src/components/Pointage/Scanner';
@@ -20,7 +20,7 @@ export const Pointage = () => {
   const [isGeolocated, setIsGeolocated] = useState(false);
 
   const tabs = [
-    { id: 'scanner', label: 'Scanner', icon: QrCode },
+    { id: 'scanner', label: 'Scanner', icon: Scan },
     { id: 'historique', label: 'Historique', icon: History },
     { id: 'planning', label: 'Planning', icon: Calendar },
     { id: 'actions', label: 'Actions RH', icon: LayoutGrid },

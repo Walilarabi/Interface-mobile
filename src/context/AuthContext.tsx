@@ -18,7 +18,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const savedUser = localStorage.getItem('flowtym_user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      // Ensure new test hotels are available even for existing sessions
+      const allHotelIds = ['hotel_1', 'hotel_2', 'hotel_3', 'hotel_4', 'hotel_5', 'hotel_6'];
+      if (parsedUser.hotel_ids && parsedUser.hotel_ids.length < allHotelIds.length) {
+        parsedUser.hotel_ids = allHotelIds;
+        localStorage.setItem('flowtym_user', JSON.stringify(parsedUser));
+      }
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
@@ -27,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const mockUser: User = {
       id: 'user_1',
       hotel_id: 'hotel_1',
-      hotel_ids: ['hotel_1', 'hotel_2'],
+      hotel_ids: ['hotel_1', 'hotel_2', 'hotel_3', 'hotel_4', 'hotel_5', 'hotel_6'],
       primary_hotel_id: 'hotel_1',
       email: email,
       role: email.includes('direction') ? 'direction' : 'femme_chambre',

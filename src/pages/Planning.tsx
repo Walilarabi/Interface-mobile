@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Calendar as CalendarIcon, MapPin, Clock, Briefcase, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useHotel } from '../hooks/useHotel';
 import { cn } from '../lib/utils';
 
@@ -52,6 +52,7 @@ const MOCK_MASTER_PLANNING: Record<string, MasterPlanningEntry[]> = {
 };
 
 export const Planning = () => {
+  const navigate = useNavigate();
   const { hotels } = useHotel();
   const [selectedDate, setSelectedDate] = useState('2026-04-01');
   
@@ -79,7 +80,10 @@ export const Planning = () => {
               <p className="text-[10px] text-text-secondary">Mercredi 1 Avril</p>
             </div>
           </div>
-          <button className="text-[10px] font-bold text-violet bg-violet/10 px-2 py-1 rounded-lg active-tap">
+          <button 
+            onClick={() => navigate('/pointage?tab=planning')}
+            className="text-[10px] font-bold text-violet bg-violet/10 px-2 py-1 rounded-lg active-tap"
+          >
             Voir calendrier
           </button>
         </div>
