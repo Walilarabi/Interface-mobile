@@ -2,12 +2,16 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, CheckCircle2, AlertCircle, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { format, subWeeks, addWeeks, startOfWeek, endOfWeek, isWithinInterval, parseISO } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Historique = () => {
+  const { t, language } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(new Date(2026, 2, 30)); // Start with a date in late March 2026
   const [statusFilter, setStatusFilter] = useState<'all' | 'started' | 'ended' | 'validated'>('all');
+
+  const locale = language === 'fr' ? fr : enUS;
 
   const history = [
     { date: '2026-04-01', start: '08:50', end: '17:10', extra: 0.2, status: 'validated', hotel: 'LuxuryForrest Paris', color: '#7C3AED' },
@@ -21,7 +25,7 @@ export const Historique = () => {
     switch (status) {
       case 'started':
         return {
-          label: 'En cours',
+          label: t('common.loading'),
           color: 'text-violet bg-violet-light/30',
           cardBg: 'bg-violet/[0.03]',
           borderColor: 'border-violet/20',
@@ -30,7 +34,7 @@ export const Historique = () => {
         };
       case 'ended':
         return {
-          label: 'À valider',
+          label: t('common.loading'),
           color: 'text-orange-600 bg-orange-50',
           cardBg: 'bg-orange-500/[0.03]',
           borderColor: 'border-orange-500/20',
@@ -40,7 +44,7 @@ export const Historique = () => {
       case 'validated':
       default:
         return {
-          label: 'Validé',
+          label: t('common.done'),
           color: 'text-green bg-green-light/30',
           cardBg: 'bg-green/[0.03]',
           borderColor: 'border-green/20',
@@ -66,10 +70,10 @@ export const Historique = () => {
   const handleNextWeek = () => setSelectedDate(prev => addWeeks(prev, 1));
 
   const filters = [
-    { id: 'all', label: 'Tous' },
-    { id: 'started', label: 'En cours' },
-    { id: 'ended', label: 'À valider' },
-    { id: 'validated', label: 'Validés' },
+    { id: 'all', label: t('common.all') },
+    { id: 'started', label: t('common.loading') },
+    { id: 'ended', label: t('common.loading') },
+    { id: 'validated', label: t('common.done') },
   ];
 
   return (
@@ -86,10 +90,10 @@ export const Historique = () => {
         <div className="text-center flex flex-col items-center">
           <div className="flex items-center gap-1.5 mb-0.5">
             <Calendar size={12} className="text-violet opacity-50" />
-            <span className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.2em]">Semaine</span>
+            <span className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.2em]">{t('common.today')}</span>
           </div>
           <h3 className="font-bold text-text-primary text-sm">
-            {format(weekStart, 'dd MMM', { locale: fr })} — {format(weekEnd, 'dd MMM', { locale: fr })}
+            {format(weekStart, 'dd MMM', { locale })} — {format(weekEnd, 'dd MMM', { locale })}
           </h3>
         </div>
 
@@ -121,9 +125,9 @@ export const Historique = () => {
 
       <div className="flex justify-between items-center mb-2 px-2">
         <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest opacity-60">
-          {filteredHistory.length} Pointage{filteredHistory.length > 1 ? 's' : ''} trouvé{filteredHistory.length > 1 ? 's' : ''}
+          {filteredHistory.length} {t('pointage.history')}
         </h3>
-        <button className="text-violet text-[10px] font-bold uppercase tracking-wider active-tap">Exporter PDF</button>
+        <button className="text-violet text-[10px] font-bold uppercase tracking-wider active-tap">{t('common.confirm')}</button>
       </div>
 
       <AnimatePresence mode="popLayout">
@@ -150,7 +154,7 @@ export const Historique = () => {
 
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-surface flex flex-col items-center justify-center text-text-primary shrink-0 border border-border/30 shadow-sm">
-                      <span className="text-[8px] font-bold uppercase opacity-50">{format(parseISO(item.date), 'EEE', { locale: fr })}</span>
+                      <span className="text-[8px] font-bold uppercase opacity-50">{format(parseISO(item.date), 'EEE', { locale })}</span>
                       <span className="text-sm font-bold leading-none">{format(parseISO(item.date), 'dd')}</span>
                     </div>
                     <div>
@@ -164,7 +168,7 @@ export const Historique = () => {
                         <span>{item.end || '--:--'}</span>
                       </div>
                       {item.extra > 0 && (
-                        <p className="text-[8px] text-green font-bold uppercase mt-0.5">+{item.extra}h supp.</p>
+                        <p className="text-[8px] text-green font-bold uppercase mt-0.5">+{item.extra}h {t('rh.extra_title')}</p>
                       )}
                     </div>
                   </div>
@@ -191,7 +195,7 @@ export const Historique = () => {
             <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto text-text-secondary/20">
               <Calendar size={32} />
             </div>
-            <p className="text-xs font-medium text-text-secondary">Aucun pointage enregistré pour cette semaine.</p>
+            <p className="text-xs font-medium text-text-secondary">{t('errors.not_found')}</p>
           </motion.div>
         )}
       </AnimatePresence>

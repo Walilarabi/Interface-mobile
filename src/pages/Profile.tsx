@@ -12,20 +12,22 @@ import { SecurityPolicy } from '@/src/components/Profile/SecurityPolicy';
 import { ThemeSelector } from '@/src/components/Profile/ThemeSelector';
 import { LanguageSelector } from '@/src/components/Profile/LanguageSelector';
 import { PasswordChange } from '@/src/components/Profile/PasswordChange';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 type ProfileView = 'menu' | 'coffre' | 'signature' | 'notifications' | 'settings' | 'security' | 'mon-profil' | 'theme' | 'langue' | 'password';
 
 export const Profile = () => {
   const { user, logout } = useAuth();
+  const { t, language } = useTranslation();
   const [view, setView] = useState<ProfileView>('menu');
 
   const menuItems = [
-    { id: 'mon-profil', icon: User, label: 'Mon Profil', color: 'bg-blue-50 text-blue-600', comingSoon: true },
-    { id: 'theme', icon: Palette, label: 'Thème couleur', color: 'bg-teal-50 text-teal-600', rightElement: <div className="w-5 h-5 rounded-full bg-teal-600" /> },
-    { id: 'langue', icon: Globe, label: 'Langue', color: 'bg-indigo-50 text-indigo-600', rightElement: <span className="text-[10px] font-bold text-text-secondary uppercase">FR Français</span> },
-    { id: 'password', icon: Lock, label: 'Changer mot de passe', color: 'bg-orange-50 text-orange-600' },
-    { id: 'settings', icon: SettingsIcon, label: 'Paramètres', color: 'bg-slate-50 text-slate-600' },
-    { id: 'security', icon: Shield, label: 'Politique de sécurité', color: 'bg-green-50 text-green-600' },
+    { id: 'mon-profil', icon: User, label: t('profile.personal_info'), color: 'bg-blue-50 text-blue-600', comingSoon: true },
+    { id: 'theme', icon: Palette, label: t('profile.theme'), color: 'bg-teal-50 text-teal-600', rightElement: <div className="w-5 h-5 rounded-full bg-teal-600" /> },
+    { id: 'langue', icon: Globe, label: t('profile.language'), color: 'bg-indigo-50 text-indigo-600', rightElement: <span className="text-[10px] font-bold text-text-secondary uppercase">{language === 'fr' ? 'FR Français' : 'EN English'}</span> },
+    { id: 'password', icon: Lock, label: t('profile.password'), color: 'bg-orange-50 text-orange-600' },
+    { id: 'settings', icon: SettingsIcon, label: t('profile.settings'), color: 'bg-slate-50 text-slate-600' },
+    { id: 'security', icon: Shield, label: t('profile.security'), color: 'bg-green-50 text-green-600' },
   ];
 
   const renderContent = () => {
@@ -51,8 +53,8 @@ export const Profile = () => {
                   <FileText size={20} />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-text-primary text-sm">Coffre-fort</p>
-                  <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">Documents RH & Signatures</p>
+                  <p className="font-bold text-text-primary text-sm">{t('profile.documents')}</p>
+                  <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">{t('profile.signature')}</p>
                 </div>
               </div>
               <ChevronRight size={16} className="text-text-secondary" />
@@ -80,7 +82,7 @@ export const Profile = () => {
                 <div className="flex items-center gap-2">
                   {item.comingSoon && (
                     <span className="text-[8px] font-bold uppercase tracking-widest bg-violet-light text-violet px-2 py-1 rounded-full">
-                      Bientôt
+                      {t('profile.soon')}
                     </span>
                   )}
                   {item.rightElement}
@@ -96,7 +98,7 @@ export const Profile = () => {
               className="w-full bg-red-50 text-red-600 py-4 rounded-[24px] font-bold flex items-center justify-center gap-3 active-tap border border-red-100"
             >
               <LogOut size={20} /> 
-              <span className="text-sm">Déconnexion</span>
+              <span className="text-sm">{t('profile.logout')}</span>
             </button>
           </div>
         </div>
@@ -125,14 +127,14 @@ export const Profile = () => {
           <div className="flex-1 text-center">
             {view !== 'menu' && (
               <h1 className="text-sm font-bold text-text-primary uppercase tracking-widest">
-                {view === 'coffre' && 'Coffre-fort'}
-                {view === 'signature' && 'Signature'}
-                {view === 'notifications' && 'Notifications'}
-                {view === 'settings' && 'Paramètres'}
-                {view === 'security' && 'Sécurité'}
-                {view === 'theme' && 'Thème couleur'}
-                {view === 'langue' && 'Langue'}
-                {view === 'password' && 'Sécurité'}
+                {view === 'coffre' && t('profile.documents')}
+                {view === 'signature' && t('profile.signature')}
+                {view === 'notifications' && t('notifications.title')}
+                {view === 'settings' && t('profile.settings')}
+                {view === 'security' && t('profile.security')}
+                {view === 'theme' && t('profile.theme')}
+                {view === 'langue' && t('profile.language')}
+                {view === 'password' && t('profile.password')}
               </h1>
             )}
           </div>

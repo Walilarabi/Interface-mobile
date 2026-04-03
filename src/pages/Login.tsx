@@ -3,8 +3,11 @@ import { useAuth } from '@/src/hooks/useAuth';
 import { Mail, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
+import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 
 export const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
   const { login, loading } = useAuth();
@@ -29,9 +32,9 @@ export const Login = () => {
             <Mail size={40} strokeWidth={1.5} />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-text-primary tracking-tight">Lien envoyé !</h2>
+            <h2 className="text-2xl font-black text-text-primary tracking-tight">{t('auth.magic_link_sent')}</h2>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Consultez votre boîte mail <span className="font-bold text-violet">{email}</span> pour vous connecter.
+              {t('auth.check_your_email')} <span className="font-bold text-violet">{email}</span> pour vous connecter.
             </p>
           </div>
           <div className="pt-4">
@@ -55,14 +58,17 @@ export const Login = () => {
         className="w-full max-w-md text-center"
       >
         <div className="mb-12">
+          <div className="flex justify-center mb-6">
+            <LanguageSwitcher />
+          </div>
           <h1 className="font-logo text-5xl text-violet mb-2 tracking-tighter">FLOWTYM</h1>
           <p className="text-text-secondary font-medium tracking-wide uppercase text-[10px]">Pilotage opérationnel hôtelier</p>
         </div>
 
         <div className="bg-surface p-8 rounded-[32px] card-shadow w-full border border-border/50">
-          <h2 className="text-2xl font-black text-text-primary mb-6 tracking-tight">Connexion</h2>
+          <h2 className="text-2xl font-black text-text-primary mb-6 tracking-tight">{t('auth.login')}</h2>
           <p className="text-text-secondary text-sm mb-8 leading-relaxed">
-            Saisissez votre email professionnel pour recevoir un lien de connexion magique.
+            {t('auth.send_link')}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -89,15 +95,15 @@ export const Login = () => {
               {loading ? (
                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <>Recevoir le lien <ArrowRight size={20} /></>
+                <>{t('auth.send_link')} <ArrowRight size={20} /></>
               )}
             </button>
           </form>
         </div>
 
         <p className="mt-12 text-[10px] text-text-secondary leading-relaxed font-bold uppercase tracking-widest opacity-60">
-          En vous connectant, vous acceptez nos <br />
-          <span className="underline decoration-violet/30 underline-offset-4">Conditions d'Utilisation</span> et notre <span className="underline decoration-violet/30 underline-offset-4">Politique de Confidentialité</span>.
+          {t('auth.terms')} <br />
+          <span className="underline decoration-violet/30 underline-offset-4">{t('auth.conditions')}</span> et notre <span className="underline decoration-violet/30 underline-offset-4">{t('auth.privacy')}</span>.
         </p>
       </motion.div>
     </div>

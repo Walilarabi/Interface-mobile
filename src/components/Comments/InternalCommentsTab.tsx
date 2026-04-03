@@ -15,11 +15,13 @@ interface InternalCommentsTabProps {
 
 export const InternalCommentsTab: React.FC<InternalCommentsTabProps> = ({ comments, onRead, onRespond, canRespond }) => {
   const [filter, setFilter] = React.useState<'all' | 'new' | 'critical'>('all');
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const filteredComments = comments.filter(c => {
-    if (filter === 'new') return c.status === 'new';
-    if (filter === 'critical') return c.rating < 6;
-    return true;
+    const matchesFilter = filter === 'all' || (filter === 'new' && c.status === 'new') || (filter === 'critical' && c.rating < 6);
+    const matchesSearch = c.comment.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         (c.room_number?.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesFilter && matchesSearch;
   });
 
   return (
@@ -31,6 +33,8 @@ export const InternalCommentsTab: React.FC<InternalCommentsTabProps> = ({ commen
           <input 
             type="text" 
             placeholder="Rechercher un commentaire..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 bg-transparent border-none text-[11px] font-medium text-text-primary placeholder:text-text-secondary focus:ring-0 p-0"
           />
         </div>

@@ -58,6 +58,33 @@ export const mockPlatformComments = [
     guest_name: 'Marc L.',
     date: '2026-03-25',
     response: 'Merci pour votre retour Marc, nous allons regarder cela.'
+  },
+  {
+    id: 'p4',
+    platform: 'expedia',
+    rating: 4.8,
+    comment: 'Excellent service and very clean rooms. Highly recommended!',
+    guest_name: 'David Wilson',
+    date: '2026-04-01',
+    response: null
+  },
+  {
+    id: 'p5',
+    platform: 'expedia',
+    rating: 3.5,
+    comment: 'Good location, but the elevator was slow.',
+    guest_name: 'Emma Thompson',
+    date: '2026-03-29',
+    response: 'We are sorry for the inconvenience, Emma. We are working on it.'
+  },
+  {
+    id: 'p6',
+    platform: 'trip',
+    rating: 4.2,
+    comment: 'Great experience, very convenient location and clean rooms.',
+    guest_name: 'Lucas G.',
+    date: '2026-04-02',
+    response: null
   }
 ];
 

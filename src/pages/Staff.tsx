@@ -4,10 +4,12 @@ import { useAuth } from '@/src/hooks/useAuth';
 import { User as UserIcon, Search, ChevronLeft, Megaphone, X, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Staff = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [notificationText, setNotificationText] = useState('');
@@ -48,7 +50,7 @@ export const Staff = () => {
         <button onClick={() => navigate('/')} className="active-tap text-text-primary">
           <ChevronLeft size={24} />
         </button>
-        <h2 className="text-lg font-bold text-text-primary">Trombinoscope Staff</h2>
+        <h2 className="text-lg font-bold text-text-primary">{t('dashboard.staff')}</h2>
       </div>
 
       <div className="p-6 space-y-6 flex-1 overflow-y-auto no-scrollbar pb-24">
@@ -56,7 +58,7 @@ export const Staff = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={20} />
           <input 
             type="text" 
-            placeholder="Rechercher un collaborateur..."
+            placeholder={t('common.loading')}
             className="w-full bg-surface border border-border rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-violet/20 card-shadow"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -123,8 +125,8 @@ export const Staff = () => {
                       <Megaphone size={20} />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-text-primary leading-tight">Notification ciblée</h2>
-                      <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">À destination de {selectedMember.first_name}</p>
+                      <h2 className="text-xl font-bold text-text-primary leading-tight">{t('notifications.title')}</h2>
+                      <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t('common.soon')} {selectedMember.first_name}</p>
                     </div>
                   </div>
                   <button onClick={() => setSelectedMember(null)} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-text-secondary active-tap">
@@ -142,10 +144,10 @@ export const Staff = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">Message urgent</label>
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">{t('common.description')}</label>
                     <textarea 
                       className="w-full bg-gray-50 border border-border rounded-2xl p-4 text-sm outline-none focus:border-violet transition-colors min-h-[120px]"
-                      placeholder="Tapez le message à envoyer personnellement..."
+                      placeholder={t('common.loading')}
                       value={notificationText}
                       onChange={(e) => setNotificationText(e.target.value)}
                     />
@@ -165,7 +167,7 @@ export const Staff = () => {
                   ) : (
                     <>
                       <Send size={18} />
-                      Envoyer la notification
+                      {t('common.confirm')}
                     </>
                   )}
                 </button>

@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useHotel } from '../hooks/useHotel';
 import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Housekeeping = () => {
   const navigate = useNavigate();
   const { activeHotel } = useHotel();
   const { token } = useAuth();
+  const { t } = useTranslation();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleOpenModule = () => {
@@ -31,7 +33,7 @@ export const Housekeeping = () => {
           <button onClick={() => navigate('/')} className="active-tap">
             <ChevronLeft size={24} />
           </button>
-          <h2 className="text-lg font-bold">Housekeeping</h2>
+          <h2 className="text-lg font-bold">{t('dashboard.housekeeping')}</h2>
         </div>
         <div className="flex items-center gap-1.5 bg-white/20 px-2 py-1 rounded-lg backdrop-blur-md">
           <MapPin size={12} />
@@ -58,9 +60,9 @@ export const Housekeeping = () => {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-2xl font-black text-text-primary tracking-tight">Module Housekeeping</h3>
+                <h3 className="text-2xl font-black text-text-primary tracking-tight">{t('dashboard.housekeeping')}</h3>
                 <p className="text-text-secondary text-sm leading-relaxed px-4">
-                  Vous allez être redirigé vers l'interface de gestion des chambres. Votre session est sécurisée par <span className="font-bold text-violet">FLOWTYM Auth</span>.
+                  {t('common.soon')}
                 </p>
               </div>
 
@@ -69,8 +71,8 @@ export const Housekeeping = () => {
                   <ShieldCheck size={24} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Sécurité</p>
-                  <p className="text-xs font-medium text-text-primary">Transmission automatique de votre jeton d'accès (JWT)</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t('common.done')}</p>
+                  <p className="text-xs font-medium text-text-primary">{t('common.online')}</p>
                 </div>
               </div>
               
@@ -78,12 +80,12 @@ export const Housekeeping = () => {
                 onClick={handleOpenModule}
                 className="w-full bg-violet text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs active-tap shadow-xl shadow-violet/20 flex items-center justify-center gap-3"
               >
-                Ouvrir le module <ExternalLink size={18} />
+                {t('common.confirm')} <ExternalLink size={18} />
               </button>
               
               <div className="flex items-center justify-center gap-2 opacity-40">
                 <Lock size={12} />
-                <p className="text-[10px] font-bold uppercase tracking-widest">Connexion chiffrée de bout en bout</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest">{t('common.online')}</p>
               </div>
             </motion.div>
           ) : (
@@ -95,8 +97,8 @@ export const Housekeeping = () => {
             >
               <div className="w-16 h-16 border-4 border-violet border-t-transparent rounded-full animate-spin mx-auto" />
               <div className="space-y-2">
-                <p className="text-sm font-black text-text-primary uppercase tracking-widest">Préparation de la session...</p>
-                <p className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em]">Génération du jeton sécurisé</p>
+                <p className="text-sm font-black text-text-primary uppercase tracking-widest">{t('common.loading')}...</p>
+                <p className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em]">{t('common.loading')}</p>
               </div>
             </motion.div>
           )}

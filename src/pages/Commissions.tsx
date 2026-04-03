@@ -3,10 +3,12 @@ import { motion } from 'motion/react';
 import { ChevronLeft, User, TrendingUp, Target, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/src/hooks/useAuth';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Commissions = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const commissions = [
     { label: 'Excursion Lennos', amount: 80 },
@@ -34,7 +36,7 @@ export const Commissions = () => {
         </div>
 
         <div className="relative z-10">
-          <h2 className="text-xl font-bold text-center mb-2">Suivi des Primes & Commissions</h2>
+          <h2 className="text-xl font-bold text-center mb-2">{t('dashboard.commissions')}</h2>
         </div>
       </div>
 
@@ -50,8 +52,8 @@ export const Commissions = () => {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-text-primary">Rémy L.</h3>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Total cumulé</p>
+              <h3 className="text-lg font-bold text-text-primary">{user?.first_name} {user?.last_name}</h3>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('common.all')}</p>
             </div>
             <div className="ml-auto text-right">
               <p className="text-3xl font-bold text-violet">242 €</p>
@@ -61,7 +63,7 @@ export const Commissions = () => {
 
         {/* Commissions List */}
         <div className="space-y-3">
-          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2 opacity-60">Commissions</h4>
+          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2 opacity-60">{t('dashboard.commissions')}</h4>
           <div className="bg-surface rounded-[28px] card-shadow overflow-hidden divide-y divide-border border border-border/30">
             {commissions.map((item, i) => (
               <div key={i} className="px-6 py-4 flex items-center justify-between bg-surface">
@@ -74,7 +76,7 @@ export const Commissions = () => {
 
         {/* Action Button */}
         <button className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20">
-          Voir mes objectifs
+          {t('common.soon')}
         </button>
       </div>
     </div>

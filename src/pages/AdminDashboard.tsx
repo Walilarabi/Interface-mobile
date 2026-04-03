@@ -5,15 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/src/hooks/useAuth';
 import { cn } from '@/src/lib/utils';
 
+import { useTranslation } from '@/src/hooks/useTranslation';
+
 export const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const kpis = [
-    { label: 'Présence', value: '31%', icon: CheckCircle, color: 'text-green', bg: 'bg-green-light' },
-    { label: 'Retard', value: '8%', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
-    { label: 'Chambres', value: '56%', icon: LayoutGrid, color: 'text-violet', bg: 'bg-violet-light' },
-    { label: 'Productivité', value: '120%', icon: Zap, color: 'text-green', bg: 'bg-green-light' },
+    { label: t('pointage.scanner'), value: '31%', icon: CheckCircle, color: 'text-green', bg: 'bg-green-light' },
+    { label: t('pointage.history'), value: '8%', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
+    { label: t('navigation.housekeeping'), value: '56%', icon: LayoutGrid, color: 'text-violet', bg: 'bg-violet-light' },
+    { label: t('dashboard.quality'), value: '120%', icon: Zap, color: 'text-green', bg: 'bg-green-light' },
   ];
 
   return (
@@ -34,7 +37,7 @@ export const AdminDashboard = () => {
         </div>
 
         <div className="relative z-10">
-          <h2 className="text-xl font-bold text-center mb-2">Dashboard Direction</h2>
+          <h2 className="text-xl font-bold text-center mb-2">{t('dashboard.manager_view')}</h2>
         </div>
       </div>
 
@@ -87,7 +90,7 @@ export const AdminDashboard = () => {
 
         {/* Action Button */}
         <button className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20">
-          Voir les détails
+          {t('dashboard.view_all')}
         </button>
       </div>
     </div>

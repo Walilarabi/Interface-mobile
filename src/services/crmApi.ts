@@ -13,7 +13,7 @@ export interface InternalComment {
 
 export interface PlatformComment {
   id: string;
-  platform: 'booking' | 'expedia' | 'tripadvisor' | 'google' | 'facebook';
+  platform: 'booking' | 'expedia' | 'tripadvisor' | 'google' | 'facebook' | 'trip';
   rating: number; // 1-5
   comment: string;
   guest_name: string | null;

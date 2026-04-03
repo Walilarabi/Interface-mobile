@@ -2,20 +2,22 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Calendar, Clock, LayoutGrid, FileText, User, Sparkles, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 interface ActionsRHProps {
   onAction: (type: string) => void;
 }
 
 export const ActionsRH = ({ onAction }: ActionsRHProps) => {
+  const { t } = useTranslation();
   const actions = [
-    { id: 'off', label: 'Poser un jour OFF', icon: Calendar, color: 'bg-blue-50 text-blue-600', sub: 'Choisissez votre jour' },
-    { id: 'retard', label: 'Déclarer un retard', icon: Clock, color: 'bg-orange-50 text-orange-600', sub: 'Informez de l\'arrivée' },
-    { id: 'maladie', label: 'Informer Maladie', icon: LayoutGrid, color: 'bg-red-50 text-red-600', sub: 'Téléversez certificat' },
-    { id: 'cp', label: 'Demande de CP', icon: FileText, color: 'bg-green-50 text-green-600', sub: 'Planifiez vos congés' },
-    { id: 'extra', label: 'Gestion des Extras', icon: Sparkles, color: 'bg-violet-light text-violet', sub: 'Proposez vos repos' },
-    { id: 'exchange', label: 'Échange de Shift', icon: ArrowLeftRight, color: 'bg-teal-50 text-teal-600', sub: 'Proposez un échange' },
-    { id: 'rdv', label: 'Demander un RDV', icon: User, color: 'bg-background text-text-secondary', sub: 'Voir votre manager' },
+    { id: 'off', label: t('rh.off_title'), icon: Calendar, color: 'bg-blue-50 text-blue-600', sub: t('rh.off_subtitle') },
+    { id: 'retard', label: t('rh.retard_title'), icon: Clock, color: 'bg-orange-50 text-orange-600', sub: t('rh.retard_subtitle') },
+    { id: 'maladie', label: t('rh.maladie_title'), icon: LayoutGrid, color: 'bg-red-50 text-red-600', sub: t('rh.maladie_subtitle') },
+    { id: 'cp', label: t('rh.cp_title'), icon: FileText, color: 'bg-green-50 text-green-600', sub: t('rh.cp_subtitle') },
+    { id: 'extra', label: t('rh.extra_title'), icon: Sparkles, color: 'bg-violet-light text-violet', sub: t('rh.extra_subtitle') },
+    { id: 'exchange', label: t('rh.exchange_title'), icon: ArrowLeftRight, color: 'bg-teal-50 text-teal-600', sub: t('rh.exchange_subtitle') },
+    { id: 'rdv', label: t('rh.rdv_title'), icon: User, color: 'bg-background text-text-secondary', sub: t('rh.rdv_subtitle') },
   ];
 
   return (

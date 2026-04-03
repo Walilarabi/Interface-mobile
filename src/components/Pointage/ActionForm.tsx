@@ -4,6 +4,7 @@ import { X, Calendar, Clock, FileText, Send, CheckCircle2, User, AlertCircle, Ch
 import { useAuth } from '@/src/hooks/useAuth';
 import { cn } from '@/src/lib/utils';
 import { useStaff } from '@/src/hooks/useStaff';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 interface ActionFormProps {
   type: string;
@@ -13,6 +14,7 @@ interface ActionFormProps {
 
 export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
   const { user } = useAuth();
+  const { t, language } = useTranslation();
   const { requestCP, requestOff, requestRetard, requestMaladie, loading: staffLoading } = useStaff(user?.id || '');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -57,7 +59,7 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
     
     return {
       days,
-      returnDate: returnDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+      returnDate: returnDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })
     };
   }, [formData.startDate, formData.endDate, user?.off_days, type]);
 
@@ -65,30 +67,30 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
     switch (type) {
       case 'off':
         return {
-          title: 'Poser un jour OFF',
-          subtitle: 'Choisissez votre jour de congé',
-          buttonText: 'Valider',
+          title: t('rh.off_title'),
+          subtitle: t('rh.off_subtitle'),
+          buttonText: t('common.confirm'),
           illustration: '📅'
         };
       case 'retard':
         return {
-          title: 'Déclarer un retard',
-          subtitle: "Heure d'arrivée prévue",
-          buttonText: 'Envoyer',
+          title: t('rh.retard_title'),
+          subtitle: t('rh.retard_subtitle'),
+          buttonText: t('common.next'),
           illustration: '⏰'
         };
       case 'maladie':
         return {
-          title: 'Informer Arrêt Maladie',
-          subtitle: "Date du début de l'arrêt",
-          buttonText: 'Envoyer',
+          title: t('rh.maladie_title'),
+          subtitle: t('rh.maladie_subtitle'),
+          buttonText: t('common.next'),
           illustration: '🤒'
         };
       case 'cp':
         return {
-          title: 'Demande de CP',
-          subtitle: 'Planifiez vos congés payés',
-          buttonText: 'Demander un congé',
+          title: t('rh.cp_title'),
+          subtitle: t('rh.cp_subtitle'),
+          buttonText: t('rh.cp'),
           illustration: '🏖️'
         };
       case 'extra':
@@ -177,8 +179,8 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
           <CheckCircle2 size={48} />
         </div>
         <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-text-primary">Demande envoyée !</h3>
-          <p className="text-text-secondary">Votre demande a été transmise avec succès.</p>
+          <h3 className="text-2xl font-bold text-text-primary">{t('common.done')}</h3>
+          <p className="text-text-secondary">{t('common.done')}</p>
         </div>
       </motion.div>
     );
@@ -217,34 +219,34 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {type === 'cp' ? (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Début</label>
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
-                  <input 
-                    type="date" 
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
-                    required
-                  />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.start_date')}</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
+                    <input 
+                      type="date" 
+                      value={formData.startDate}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                      className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.end_date')}</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
+                    <input 
+                      type="date" 
+                      value={formData.endDate}
+                      onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Fin</label>
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
-                  <input 
-                    type="date" 
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
 
             {cpDetails && cpDetails.days > 0 && (
               <motion.div 
@@ -407,7 +409,7 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
         ) : (
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Date</label>
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.select_date')}</label>
               <div className="relative">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
                 <input 
@@ -421,7 +423,7 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
             </div>
             {(type === 'retard' || type === 'rdv') && (
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Heure</label>
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.expected_arrival')}</label>
                 <div className="relative">
                   <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
                   <input 
@@ -439,7 +441,7 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
 
         {type === 'maladie' && (
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Justificatif (optionnel)</label>
+            <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.upload_certificate')}</label>
             <div className="relative">
               <input 
                 type="file" 
@@ -453,7 +455,7 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
               >
                 <FileText className="text-text-secondary opacity-40" size={24} />
                 <span className="text-xs font-bold text-text-secondary">
-                  {formData.file ? formData.file.name : 'Télécharger un document'}
+                  {formData.file ? formData.file.name : t('rh.upload_certificate')}
                 </span>
               </label>
             </div>
@@ -461,9 +463,9 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
         )}
 
         <div className="space-y-2">
-          <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Commentaire (optionnel)</label>
+          <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">{t('rh.reason')}</label>
           <textarea 
-            placeholder="Précisez votre demande..."
+            placeholder={t('rh.reason')}
             value={formData.comment}
             onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
             className="w-full bg-background border border-border rounded-2xl py-4 px-4 min-h-[120px] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet/20 text-text-primary resize-none"

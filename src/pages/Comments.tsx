@@ -8,9 +8,11 @@ import { InternalCommentsTab } from '@/src/components/Comments/InternalCommentsT
 import { PlatformCommentsTab } from '@/src/components/Comments/PlatformCommentsTab';
 import { MessageSquare, BarChart3, Globe, ChevronLeft, RefreshCw } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Comments = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { 
     internalComments, 
     platformComments, 
@@ -27,9 +29,9 @@ export const Comments = () => {
   const canRespond = ['admin', 'manager', 'director', 'responsable', 'reception'].includes(user?.role || '');
 
   const tabs = [
-    { id: 'summary', label: 'Synthèse', icon: BarChart3 },
-    { id: 'internal', label: 'Internes', icon: MessageSquare },
-    { id: 'platform', label: 'Plateformes', icon: Globe },
+    { id: 'summary', label: t('comments.summary'), icon: BarChart3 },
+    { id: 'internal', label: t('comments.internal'), icon: MessageSquare },
+    { id: 'platform', label: t('comments.platforms'), icon: Globe },
   ];
 
   return (
@@ -44,7 +46,7 @@ export const Comments = () => {
             >
               <ChevronLeft size={20} />
             </button>
-            <h1 className="text-xl font-black tracking-tight">Commentaires Clients</h1>
+            <h1 className="text-xl font-black tracking-tight">{t('comments.title')}</h1>
           </div>
           <button 
             onClick={refresh}
@@ -60,7 +62,7 @@ export const Comments = () => {
         
         <div className="mt-6 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
-          <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Mise à jour en temps réel</p>
+          <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">{t('common.online')}</p>
         </div>
       </div>
 
@@ -90,7 +92,7 @@ export const Comments = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="w-10 h-10 border-4 border-violet border-t-transparent rounded-full animate-spin" />
-            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Chargement des avis...</p>
+            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">{t('comments.loading')}</p>
           </div>
         ) : (
           <AnimatePresence mode="wait">

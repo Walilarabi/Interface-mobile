@@ -4,6 +4,7 @@ import { ChevronLeft, MoreVertical, Send, Check, CheckCheck, Trash2, BellOff, Se
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/src/hooks/useAuth';
 import { cn } from '@/src/lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 interface Message {
   id: string;
@@ -19,21 +20,22 @@ interface Message {
   targetService?: string;
 }
 
-const SERVICES = [
-  { id: 'general', label: 'Général', icon: Users, color: 'text-violet bg-violet/10' },
-  { id: 'housekeeping', label: 'Housekeeping', icon: Briefcase, color: 'text-green bg-green/10' },
-  { id: 'reception', label: 'Réception', icon: ConciergeBell, color: 'text-blue-500 bg-blue-50' },
-  { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'text-orange-500 bg-orange-50' },
-  { id: 'direction', label: 'Direction', icon: ShieldCheck, color: 'text-red-500 bg-red-50' },
-  { id: 'staff', label: 'Collaborateurs', icon: UserPlus, color: 'text-pink-500 bg-pink-50' },
-];
-
 export const Chat = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [message, setMessage] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [activeService, setActiveService] = useState('general');
+
+  const SERVICES = [
+    { id: 'general', label: t('common.all'), icon: Users, color: 'text-violet bg-violet/10' },
+    { id: 'housekeeping', label: t('dashboard.housekeeping'), icon: Briefcase, color: 'text-green bg-green/10' },
+    { id: 'reception', label: t('dashboard.reception'), icon: ConciergeBell, color: 'text-blue-500 bg-blue-50' },
+    { id: 'maintenance', label: t('dashboard.maintenance'), icon: Wrench, color: 'text-orange-500 bg-orange-50' },
+    { id: 'direction', label: t('dashboard.direction'), icon: ShieldCheck, color: 'text-red-500 bg-red-50' },
+    { id: 'staff', label: t('dashboard.staff'), icon: UserPlus, color: 'text-pink-500 bg-pink-50' },
+  ];
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [showBroadcastModal, setShowBroadcastModal] = useState(false);
@@ -154,8 +156,8 @@ export const Chat = () => {
                 </div>
               </div>
               <div>
-                <h1 className="font-bold text-lg leading-tight">Communication interne</h1>
-                <p className="text-[10px] opacity-70 uppercase tracking-widest font-medium">En ligne • {SERVICES.find(s => s.id === activeService)?.label}</p>
+                <h1 className="font-bold text-lg leading-tight">{t('dashboard.chat')}</h1>
+                <p className="text-[10px] opacity-70 uppercase tracking-widest font-medium">{t('common.online')} • {SERVICES.find(s => s.id === activeService)?.label}</p>
               </div>
             </div>
           </div>
@@ -200,21 +202,21 @@ export const Chat = () => {
                             className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm font-medium"
                           >
                             <UserPlus size={16} className="text-text-secondary" />
-                            Ajouter un membre
+                            {t('common.soon')}
                           </button>
                           <button 
                             onClick={() => { setShowMenu(false); }}
                             className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm font-medium"
                           >
                             <BellOff size={16} className="text-text-secondary" />
-                            Muer les notifications
+                            {t('common.soon')}
                           </button>
                           <button 
                             onClick={() => { setShowMenu(false); }}
                             className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm font-medium"
                           >
                             <Settings size={16} className="text-text-secondary" />
-                            Paramètres du groupe
+                            {t('common.soon')}
                           </button>
                           <div className="h-px bg-border/50 my-1 mx-2" />
                         </>
@@ -224,7 +226,7 @@ export const Chat = () => {
                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 active:bg-red-100 transition-colors text-sm font-medium text-red-500"
                       >
                         <Trash2 size={16} />
-                        Effacer la conversation
+                        {t('common.delete')}
                       </button>
                     </motion.div>
                   </>
@@ -264,10 +266,10 @@ export const Chat = () => {
             <div className="bg-pink-50 border border-pink-100 p-4 rounded-2xl mb-6">
               <p className="text-xs font-bold text-pink-600 mb-1 flex items-center gap-2">
                 <ShieldCheck size={14} />
-                Option réservée au management
+                {t('dashboard.direction')}
               </p>
               <p className="text-[10px] text-pink-500 leading-relaxed">
-                Sélectionnez un collaborateur pour lui envoyer une notification ciblée ou un message personnel.
+                {t('common.soon')}
               </p>
             </div>
             <div className="grid gap-3">
@@ -311,7 +313,7 @@ export const Chat = () => {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Notification ciblée • {msg.targetService}</p>
+                    <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">{t('notifications.title')} • {msg.targetService}</p>
                     <span className="text-[9px] text-text-secondary">{msg.time}</span>
                   </div>
                   <p className="text-sm font-bold text-text-primary">{msg.text}</p>
@@ -380,13 +382,13 @@ export const Chat = () => {
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                     <span className="text-sm font-bold text-red-500 font-mono">{formatTime(recordingTime)}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Enregistrement...</span>
+                  <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">{t('common.loading')}...</span>
                 </div>
               ) : (
                 <>
                   <input 
                     type="text" 
-                    placeholder="Écrire un message..." 
+                    placeholder={t('common.loading')} 
                     className="flex-1 bg-transparent border-none outline-none text-sm text-text-primary placeholder:text-text-secondary/50"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -452,7 +454,7 @@ export const Chat = () => {
                     <div className="w-10 h-10 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center">
                       <Megaphone size={20} />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary">Notification ciblée</h2>
+                    <h2 className="text-xl font-bold text-text-primary">{t('notifications.title')}</h2>
                   </div>
                   <button onClick={() => setShowBroadcastModal(false)} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-text-secondary active-tap">
                     <X size={20} />
@@ -461,7 +463,7 @@ export const Chat = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">Service cible</label>
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">{t('dashboard.staff')}</label>
                     <div className="grid grid-cols-2 gap-2">
                       {SERVICES.map(s => (
                         <button
@@ -479,10 +481,10 @@ export const Chat = () => {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">Message urgent</label>
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">{t('common.description')}</label>
                     <textarea 
                       className="w-full bg-gray-50 border border-border rounded-2xl p-4 text-sm outline-none focus:border-violet transition-colors min-h-[100px]"
-                      placeholder="Tapez le message à diffuser..."
+                      placeholder={t('common.loading')}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                     />
@@ -496,7 +498,7 @@ export const Chat = () => {
                   }}
                   className="w-full py-4 bg-violet text-white font-bold rounded-2xl shadow-lg shadow-violet/20 active-tap"
                 >
-                  Diffuser la notification
+                  {t('common.confirm')}
                 </button>
               </div>
             </motion.div>

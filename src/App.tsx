@@ -16,6 +16,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { Rewards } from './pages/Rewards';
 import { Planning } from './pages/Planning';
 import { Comments } from './pages/Comments';
+import { Notifications } from './pages/Notifications';
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/staff" element={<Staff />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/comments" element={<Comments />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

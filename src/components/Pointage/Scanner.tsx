@@ -5,10 +5,12 @@ import { CheckCircle2, AlertCircle, MapPin, Briefcase, Clock } from 'lucide-reac
 import { useHotel } from '@/src/hooks/useHotel';
 import { useStaff } from '@/src/hooks/useStaff';
 import { useAuth } from '@/src/hooks/useAuth';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Scanner = () => {
   const { hotels, setActiveHotel, activeHotel } = useHotel();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { startPointage, endPointage, loading } = useStaff(user?.id || '');
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [scanTime, setScanTime] = useState<string | null>(null);
@@ -44,9 +46,9 @@ export const Scanner = () => {
         (err) => {
           console.error('Geolocation error:', err);
           if (err.code === 1) {
-            setError('Accès refusé. Veuillez autoriser la géolocalisation.');
+            setError(t('errors.unauthorized'));
           } else {
-            setError('Erreur GPS ou signal faible. Veuillez réessayer.');
+            setError(t('errors.network'));
           }
         },
         { enableHighAccuracy: true, timeout: 10000 }
@@ -81,13 +83,13 @@ export const Scanner = () => {
               scannerRef.current.clear();
             }
           } catch (err) {
-            setError("Erreur lors de l'enregistrement du pointage.");
+            setError(t('errors.server'));
           }
         } else {
-          setError(`Vous êtes trop loin de l'établissement (${Math.round(distance)}m). Le pointage doit se faire sur place.`);
+          setError(t('errors.validation'));
         }
       } else if (!location) {
-        setError("Attente de la géolocalisation...");
+        setError(t('common.loading'));
       } else {
         // If hotel has no coordinates, allow for demo but warn
         try {
@@ -99,11 +101,11 @@ export const Scanner = () => {
             scannerRef.current.clear();
           }
         } catch (err) {
-          setError("Erreur lors de l'enregistrement du pointage.");
+          setError(t('errors.server'));
         }
       }
     } else {
-      setError("QR Code non reconnu pour cet établissement.");
+      setError(t('errors.not_found'));
     }
   };
 
@@ -144,12 +146,12 @@ export const Scanner = () => {
                   transition={{ repeat: Infinity, duration: 1.5 }}
                   className="w-2 h-2 bg-violet rounded-full"
                 />
-                Récupération de la position...
+                {t('common.loading')}
               </div>
             )}
             {location && (
               <div className="py-4 flex items-center justify-center gap-2 text-green text-xs font-medium">
-                <MapPin size={14} /> Position validée
+                <MapPin size={14} /> {t('common.done')}
               </div>
             )}
             {error && (
@@ -161,16 +163,16 @@ export const Scanner = () => {
                   onClick={requestLocation}
                   className="mt-2 text-[10px] text-violet font-bold uppercase tracking-widest active-tap border border-violet/20 px-3 py-1.5 rounded-lg"
                 >
-                  Réessayer la détection
+                  {t('common.retry')}
                 </button>
               </div>
             )}
           </div>
           <div className="space-y-2">
-            <p className="text-text-secondary font-medium px-8">Scanner le QR code de l'hôtel pour enregistrer votre début ou fin de service.</p>
+            <p className="text-text-secondary font-medium px-8">{t('pointage.scan_to_clock')}</p>
             <div className="flex items-center justify-center gap-2 text-[10px] text-text-secondary uppercase tracking-widest font-bold">
               <Briefcase size={10} />
-              Établissement actif: <span className="text-violet">{activeHotel?.name}</span>
+              {t('profile.service')}: <span className="text-violet">{activeHotel?.name}</span>
             </div>
           </div>
         </>
@@ -221,7 +223,7 @@ export const Scanner = () => {
                 transition={{ delay: 0.5 }}
                 className="text-[10px] font-bold text-green uppercase tracking-[0.3em]"
               >
-                Pointage Confirmé
+                {t('common.done')}
               </motion.p>
               <h3 className="text-2xl font-black text-text-primary leading-tight">
                 Bon service !
@@ -235,7 +237,7 @@ export const Scanner = () => {
                     <Briefcase size={20} />
                   </div>
                   <div className="text-left">
-                    <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Établissement</p>
+                    <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('profile.service')}</p>
                     <p className="text-sm font-bold text-text-primary">{activeHotel?.name}</p>
                   </div>
                 </div>
@@ -247,7 +249,7 @@ export const Scanner = () => {
                     <Clock size={20} />
                   </div>
                   <div className="text-left">
-                    <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Heure d'arrivée</p>
+                    <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('rh.expected_arrival')}</p>
                     <p className="text-sm font-bold text-text-primary">{scanTime}</p>
                   </div>
                 </div>
@@ -261,7 +263,7 @@ export const Scanner = () => {
               className="pt-4"
             >
               <p className="text-[10px] text-text-secondary font-medium italic">
-                Votre pointage a été géolocalisé et enregistré avec succès.
+                {t('common.done')}
               </p>
             </motion.div>
           </motion.div>
@@ -276,7 +278,7 @@ export const Scanner = () => {
             }}
             className="mt-8 px-8 py-3 bg-background border border-border/50 rounded-full text-violet font-bold uppercase tracking-widest text-[10px] active-tap shadow-sm"
           >
-            Nouveau scan
+            {t('pointage.scanner')}
           </motion.button>
         </motion.div>
       )}

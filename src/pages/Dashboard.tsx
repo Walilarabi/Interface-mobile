@@ -8,9 +8,11 @@ import { useHotel } from '@/src/hooks/useHotel';
 import { NotificationCenter } from '@/src/components/Profile/NotificationCenter';
 import { useStaff } from '@/src/hooks/useStaff';
 import { useComments } from '@/src/hooks/useComments';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Dashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { activeHotel, hotels, setActiveHotel } = useHotel();
   const [showHotelSelector, setShowHotelSelector] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -98,7 +100,7 @@ export const Dashboard = () => {
               className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 active-tap max-w-[160px]"
             >
               <MapPin size={9} className="text-green shrink-0" />
-              <span className="text-[9px] font-bold tracking-wide truncate">{activeHotel?.name || 'Sélectionner un hôtel'}</span>
+              <span className="text-[9px] font-bold tracking-wide truncate">{activeHotel?.name || t('common.loading')}</span>
               <ChevronRight size={9} className="shrink-0 opacity-50" />
             </button>
           </div>
@@ -126,8 +128,8 @@ export const Dashboard = () => {
         </div>
 
         <div className="mt-2.5 space-y-0 relative z-10">
-          <h2 className="text-base font-bold tracking-tight leading-none">Bonjour {user?.first_name},</h2>
-          <p className="text-white/70 text-[9px] font-medium">Prêt pour une nouvelle journée ?</p>
+          <h2 className="text-base font-bold tracking-tight leading-none">{t('dashboard.welcome')} {user?.first_name},</h2>
+          <p className="text-white/70 text-[9px] font-medium">{t('dashboard.ready_for_day')}</p>
         </div>
       </div>
 
@@ -156,10 +158,10 @@ export const Dashboard = () => {
                   <QrCode size={16} className="text-white" />
                 </div>
                 <div className="flex-1 text-white">
-                  <h3 className="text-[11px] font-black leading-none tracking-tight whitespace-nowrap">Pointer maintenant</h3>
+                  <h3 className="text-[11px] font-black leading-none tracking-tight whitespace-nowrap">{t('dashboard.clock_now')}</h3>
                 </div>
                 <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-full border border-white/10">
-                  <span className="text-[7px] font-black uppercase tracking-widest">Scanner</span>
+                  <span className="text-[7px] font-black uppercase tracking-widest">{t('dashboard.scanner')}</span>
                   <ChevronRight size={10} className="text-white opacity-60" />
                 </div>
               </div>
@@ -177,7 +179,7 @@ export const Dashboard = () => {
                 <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-green rounded-full border-2 border-white animate-pulse" />
               </div>
               <div>
-                <p className="text-[6px] font-black text-green uppercase tracking-widest">En poste</p>
+                <p className="text-[6px] font-black text-green uppercase tracking-widest">{t('common.online')}</p>
                 <p className="text-sm font-black text-text-primary font-mono tracking-tighter">{elapsedTime}</p>
               </div>
             </div>
@@ -198,11 +200,11 @@ export const Dashboard = () => {
         {/* 📅 3. Bloc intelligent (Ma journée) - Compact */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Ma journée</h3>
+            <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.my_day')}</h3>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 bg-violet/10 px-2 py-0.5 rounded-full">
                 <div className="w-1 h-1 bg-violet rounded-full animate-pulse" />
-                <span className="text-[8px] font-bold text-violet">Top Performer</span>
+                <span className="text-[8px] font-bold text-violet">{t('performance.top_performer')}</span>
               </div>
               <button 
                 onClick={() => setShowMaJournee(!showMaJournee)}
@@ -230,13 +232,13 @@ export const Dashboard = () => {
 
         {/* 🧩 4. Modules métiers - Compact Grid */}
         <div className="space-y-1.5">
-          <h3 className="text-[9px] font-black text-text-secondary px-2 uppercase tracking-widest">Modules métiers</h3>
+          <h3 className="text-[9px] font-black text-text-secondary px-2 uppercase tracking-widest">{t('dashboard.business_modules')}</h3>
           <div className="grid grid-cols-2 gap-2.5">
             {[
-              { id: 'housekeeping', label: 'Housekeeping', sub: 'Chambres', icon: Briefcase, color: 'bg-green-50 text-green', path: '/housekeeping', soon: false },
-              { id: 'chat', label: 'Chat Équipe', sub: 'Messages', icon: MessageSquare, color: 'bg-violet-50 text-violet', path: '/chat', soon: false },
-              { id: 'performance', label: 'Performance', sub: 'Objectifs', icon: Trophy, color: 'bg-violet-50 text-violet', path: '/performance', soon: false },
-              { id: 'commissions', label: 'Commissions', sub: 'Gains', icon: TrendingUp, color: 'bg-teal-50 text-teal-600', path: '/commissions', soon: false },
+              { id: 'housekeeping', label: t('navigation.housekeeping'), sub: t('dashboard.assigned_rooms'), icon: Briefcase, color: 'bg-green-50 text-green', path: '/housekeeping', soon: false },
+              { id: 'chat', label: t('dashboard.chat'), sub: 'Messages', icon: MessageSquare, color: 'bg-violet-50 text-violet', path: '/chat', soon: false },
+              { id: 'performance', label: t('performance.title'), sub: t('performance.objectives'), icon: Trophy, color: 'bg-violet-50 text-violet', path: '/performance', soon: false },
+              { id: 'commissions', label: t('dashboard.commissions'), sub: t('performance.bonus'), icon: TrendingUp, color: 'bg-teal-50 text-teal-600', path: '/commissions', soon: false },
             ].map((module) => (
               <Link 
                 key={module.id}
@@ -261,13 +263,13 @@ export const Dashboard = () => {
         {isManager ? (
           <div className="space-y-2">
             <div className="flex justify-between items-center px-2">
-              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Performance & suivi</h3>
-              <span className="text-[8px] font-bold text-text-secondary">Vue Manager</span>
+              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.performance_tracking')}</h3>
+              <span className="text-[8px] font-bold text-text-secondary">{t('dashboard.manager_view')}</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'admin', label: 'Admin', sub: 'Équipe', icon: Target, color: 'bg-slate-50 text-slate-600', path: '/admin-dashboard' },
-                { id: 'rewards', label: 'Récompenses', sub: 'Badges & Bonus', icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
+                { id: 'admin', label: 'Admin', sub: t('dashboard.staff'), icon: Target, color: 'bg-slate-50 text-slate-600', path: '/admin-dashboard' },
+                { id: 'rewards', label: t('performance.bonus'), sub: t('dashboard.rewards'), icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
               ].map((module) => (
                 <Link 
                   key={module.id}
@@ -288,13 +290,13 @@ export const Dashboard = () => {
         ) : (
           <div className="space-y-2">
             <div className="flex justify-between items-center px-2">
-              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Mes Objectifs</h3>
-              <span className="text-[8px] font-bold text-text-secondary">Top performer du jour</span>
+              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.my_objectives')}</h3>
+              <span className="text-[8px] font-bold text-text-secondary">{t('dashboard.top_performer_day')}</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'rewards', label: 'Récompenses', sub: 'Mes Badges', icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
-                { id: 'performance_perso', label: 'Ma Qualité', sub: 'Score & Avis', icon: Star, color: 'bg-yellow-50 text-yellow-600', path: '/performance' },
+                { id: 'rewards', label: t('performance.bonus'), sub: t('dashboard.rewards'), icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
+                { id: 'performance_perso', label: t('performance.quality'), sub: t('performance.my_score'), icon: Star, color: 'bg-yellow-50 text-yellow-600', path: '/performance' },
               ].map((module) => (
                 <Link 
                   key={module.id}
@@ -320,7 +322,7 @@ export const Dashboard = () => {
           className="w-full bg-white border border-border/50 p-3 rounded-[20px] flex items-center justify-center gap-2 text-text-secondary active-tap hover:bg-gray-50 transition-colors shadow-sm"
         >
           <Eye size={16} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Voir le Coup d'Œil</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest">{t('dashboard.view_glance')}</span>
         </button>
       </div>
 
@@ -347,7 +349,7 @@ export const Dashboard = () => {
                     <div className="w-10 h-10 rounded-2xl bg-violet-light text-violet flex items-center justify-center">
                       <MapPin size={20} />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary">Établissements</h2>
+                    <h2 className="text-xl font-bold text-text-primary">{t('profile.personal_info')}</h2>
                   </div>
                   <button 
                     onClick={() => setShowHotelSelector(false)}
@@ -410,7 +412,7 @@ export const Dashboard = () => {
               className="fixed inset-x-0 bottom-0 z-[101] bg-white rounded-t-[40px] h-[85vh] overflow-hidden flex flex-col"
             >
               <div className="p-6 flex items-center justify-between border-b border-border/50">
-                <h2 className="text-xl font-bold text-text-primary">Notifications</h2>
+                <h2 className="text-xl font-bold text-text-primary">{t('notifications.title')}</h2>
                 <button 
                   onClick={() => setShowNotifications(false)}
                   className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-text-secondary active-tap"
@@ -451,7 +453,7 @@ export const Dashboard = () => {
                     <div className="w-10 h-10 rounded-2xl bg-violet-light text-violet flex items-center justify-center shadow-inner">
                       <Eye size={20} />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary">Coup d'Œil</h2>
+                    <h2 className="text-xl font-bold text-text-primary">{t('dashboard.glance_title')}</h2>
                   </div>
                   <button 
                     onClick={() => setShowCoupDeilModal(false)}
@@ -463,7 +465,7 @@ export const Dashboard = () => {
 
                 {/* Ma Journée dans Coup d'œil */}
                 <div className="relative z-10">
-                  <h3 className="text-[8px] font-black text-text-secondary uppercase tracking-widest mb-2">Ma Journée</h3>
+                  <h3 className="text-[8px] font-black text-text-secondary uppercase tracking-widest mb-2">{t('dashboard.my_day')}</h3>
                   <MaJourneeBlock compact />
                 </div>
 
@@ -477,7 +479,7 @@ export const Dashboard = () => {
                       <span className="text-[8px] font-black text-green bg-green/10 px-2 py-0.5 rounded-full">+12%</span>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Commissions</p>
+                      <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.commissions')}</p>
                       <p className="text-lg font-black text-text-primary">142,50 €</p>
                     </div>
                   </div>
@@ -490,7 +492,7 @@ export const Dashboard = () => {
                       <span className="text-[8px] font-black text-violet bg-violet/10 px-2 py-0.5 rounded-full">Top 5</span>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Qualité</p>
+                      <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.quality')}</p>
                       <div className="flex items-baseline gap-1">
                         <p className="text-lg font-black text-text-primary">4.8</p>
                         <p className="text-[8px] text-text-secondary font-bold">/5</p>
@@ -506,9 +508,9 @@ export const Dashboard = () => {
                       <div className="w-7 h-7 rounded-lg bg-violet-light text-violet flex items-center justify-center">
                         <CalendarIcon size={14} />
                       </div>
-                      <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Prochain Shift</h3>
+                      <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">{t('dashboard.next_shift')}</h3>
                     </div>
-                    <span className="text-[9px] font-black text-violet bg-violet-light px-2 py-0.5 rounded-full">Demain</span>
+                    <span className="text-[9px] font-black text-violet bg-violet-light px-2 py-0.5 rounded-full">{t('dashboard.tomorrow')}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
@@ -516,7 +518,7 @@ export const Dashboard = () => {
                       <p className="text-[10px] text-text-secondary font-medium">{activeHotel?.name}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-bold text-text-primary">Vendredi</p>
+                      <p className="text-[10px] font-bold text-text-primary">{t('common.confirm')}</p>
                       <p className="text-[10px] text-text-secondary">03 Avril</p>
                     </div>
                   </div>
@@ -526,7 +528,7 @@ export const Dashboard = () => {
                   onClick={() => setShowCoupDeilModal(false)}
                   className="w-full py-3 rounded-xl bg-violet text-white font-bold active-tap shadow-lg shadow-violet/20 relative z-10"
                 >
-                  Fermer
+                  {t('dashboard.close')}
                 </button>
               </div>
             </motion.div>

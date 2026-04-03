@@ -4,6 +4,7 @@ import { ChevronLeft, Calendar as CalendarIcon, MapPin, Clock, Briefcase, Chevro
 import { Link, useNavigate } from 'react-router-dom';
 import { useHotel } from '../hooks/useHotel';
 import { cn } from '../lib/utils';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 interface MasterPlanningEntry {
   id: string;
@@ -53,6 +54,7 @@ const MOCK_MASTER_PLANNING: Record<string, MasterPlanningEntry[]> = {
 
 export const Planning = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { hotels } = useHotel();
   const [selectedDate, setSelectedDate] = useState('2026-04-01');
   
@@ -65,7 +67,7 @@ export const Planning = () => {
         <Link to="/" className="active-tap">
           <ChevronLeft size={20} />
         </Link>
-        <h1 className="text-base font-bold">Master Planning</h1>
+        <h1 className="text-base font-bold">{t('pointage.planning')}</h1>
       </header>
 
       {/* Date Selector */}
@@ -76,7 +78,7 @@ export const Planning = () => {
               <CalendarIcon size={16} />
             </div>
             <div>
-              <p className="text-xs font-bold text-text-primary">Aujourd'hui</p>
+              <p className="text-xs font-bold text-text-primary">{t('dashboard.today')}</p>
               <p className="text-[10px] text-text-secondary">Mercredi 1 Avril</p>
             </div>
           </div>
@@ -84,7 +86,7 @@ export const Planning = () => {
             onClick={() => navigate('/pointage?tab=planning')}
             className="text-[10px] font-bold text-violet bg-violet/10 px-2 py-1 rounded-lg active-tap"
           >
-            Voir calendrier
+            {t('dashboard.view_glance')}
           </button>
         </div>
 
@@ -164,14 +166,14 @@ export const Planning = () => {
                           className="px-1.5 py-0.5 rounded text-[8px] font-bold text-white uppercase tracking-wider"
                           style={{ backgroundColor: entry.hotel_color }}
                         >
-                          Actif
+                          {t('common.online')}
                         </div>
                       )}
                     </div>
 
                     {entry.tasks.length > 0 && (
                       <div className="space-y-1.5 mt-2 pt-2 border-t border-border/30">
-                        <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Missions</p>
+                        <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('performance.objectives')}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {entry.tasks.map((task, i) => (
                             <div key={i} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
@@ -195,16 +197,16 @@ export const Planning = () => {
         <div className="flex items-center justify-between">
           <div className="flex gap-4">
             <div>
-              <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Total Heures</p>
+              <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('pointage.history')}</p>
               <p className="text-sm font-bold text-text-primary">8h 00m</p>
             </div>
             <div>
-              <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Établissements</p>
+              <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('profile.personal_info')}</p>
               <p className="text-sm font-bold text-text-primary">2 Hôtels</p>
             </div>
           </div>
           <button className="bg-violet text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-violet/20 active-tap">
-            Détails de la journée
+            {t('dashboard.view_glance')}
           </button>
         </div>
       </div>

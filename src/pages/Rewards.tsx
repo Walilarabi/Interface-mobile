@@ -4,10 +4,12 @@ import { Trophy, Star, TrendingUp, ChevronLeft, Award, Target, Clock, User, Chev
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/hooks/useAuth';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Rewards = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const ranking = [
     { name: 'Clara L.', score: 95, photo: null },
@@ -34,7 +36,7 @@ export const Rewards = () => {
         </div>
 
         <div className="relative z-10">
-          <h2 className="text-xl font-bold text-center mb-2">Récompenses</h2>
+          <h2 className="text-xl font-bold text-center mb-2">{t('dashboard.rewards')}</h2>
         </div>
       </div>
 
@@ -52,20 +54,20 @@ export const Rewards = () => {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-text-primary">Kevin P.</h3>
-            <p className="text-xs font-bold text-violet uppercase tracking-widest mt-1">Expert de l'entretien</p>
+            <h3 className="text-2xl font-bold text-text-primary">{user?.first_name} {user?.last_name}</h3>
+            <p className="text-xs font-bold text-violet uppercase tracking-widest mt-1">{t('common.soon')}</p>
           </div>
 
           <div className="flex items-center justify-center gap-2 text-text-secondary">
             <Trophy size={14} className="text-orange-500" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Badges</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">{t('common.soon')}</span>
             <ChevronRight size={14} className="opacity-30" />
           </div>
         </div>
 
         {/* Ranking List */}
         <div className="space-y-3">
-          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2 opacity-60">Classement</h4>
+          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2 opacity-60">{t('performance.ranking')}</h4>
           <div className="bg-surface rounded-[28px] card-shadow overflow-hidden divide-y divide-border border border-border/30">
             {ranking.map((item, i) => (
               <div key={i} className="px-6 py-4 flex items-center justify-between bg-surface">
@@ -85,7 +87,7 @@ export const Rewards = () => {
         {/* Action Button */}
         <button className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20 flex items-center justify-center gap-2">
           <TrendingUp size={20} />
-          Transmettre à la maintenance
+          {t('common.soon')}
         </button>
       </div>
     </div>

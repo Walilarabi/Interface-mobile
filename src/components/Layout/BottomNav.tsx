@@ -1,15 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Clock, Calendar, LayoutGrid, MessageSquare } from 'lucide-react';
+import { Home, Clock, Calendar, LayoutGrid, Star } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion } from 'motion/react';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const BottomNav = () => {
+  const { t } = useTranslation();
   const navItems = [
-    { icon: Home, label: 'Dashboard', path: '/' },
-    { icon: MessageSquare, label: 'Commentaires', path: '/comments' },
-    { icon: Clock, label: 'Historique', path: '/pointage?tab=historique' },
-    { icon: Calendar, label: 'Planning', path: '/planning' },
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Star, label: t('navigation.comments'), path: '/comments' },
+    { icon: Clock, label: t('pointage.history'), path: '/pointage?tab=historique' },
+    { icon: Calendar, label: t('pointage.planning'), path: '/planning' },
     { icon: LayoutGrid, label: 'Actions', path: '/pointage?tab=actions' },
   ];
 

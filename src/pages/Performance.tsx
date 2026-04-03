@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useStaff } from '@/src/hooks/useStaff';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Performance = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { getRanking, getScore, loading } = useStaff(user?.id || '');
   const [ranking, setRanking] = useState<any[]>([]);
   const [userScore, setUserScore] = useState<number>(0);
@@ -47,7 +49,7 @@ export const Performance = () => {
         </div>
 
         <div className="relative z-10">
-          <h2 className="text-xl font-bold text-center mb-2">Performance collaborateurs</h2>
+          <h2 className="text-xl font-bold text-center mb-2">{t('performance.title')}</h2>
         </div>
       </div>
 
@@ -70,7 +72,7 @@ export const Performance = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-text-primary">{user?.first_name} {user?.last_name?.charAt(0)}.</h3>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Votre score actuel</p>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('performance.my_score')}</p>
             </div>
             <div className="ml-auto text-right">
               <p className="text-3xl font-bold text-violet">{userScore}</p>
@@ -92,11 +94,11 @@ export const Performance = () => {
 
         {/* Ranking List */}
         <div className="space-y-3">
-          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2">Classement de l'équipe</h4>
+          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2">{t('performance.ranking')}</h4>
           {loading && ranking.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 space-y-4">
               <div className="w-8 h-8 border-4 border-violet border-t-transparent rounded-full animate-spin" />
-              <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Chargement du classement...</p>
+              <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">{t('common.loading')}</p>
             </div>
           ) : (
             ranking.map((item, i) => (
@@ -128,7 +130,7 @@ export const Performance = () => {
           onClick={() => navigate('/pointage?tab=solde')}
           className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20"
         >
-          Voir mes détails
+          {t('dashboard.view_all')}
         </button>
       </div>
     </div>

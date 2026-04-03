@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { MapPin, CheckCircle2, ChevronRight, XCircle, Loader2, Navigation } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useHotel } from '@/src/hooks/useHotel';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 interface GeolocationProps {
   onConfirm: () => void;
@@ -10,6 +11,7 @@ interface GeolocationProps {
 
 export const Geolocation = ({ onConfirm }: GeolocationProps) => {
   const { activeHotel } = useHotel();
+  const { t } = useTranslation();
   const [status, setStatus] = useState<'detecting' | 'success' | 'error'>('detecting');
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const [isOnSite, setIsOnSite] = useState(false);
@@ -17,7 +19,7 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
   const requestLocation = () => {
     if (!navigator.geolocation) {
       setStatus('error');
-      setUserLocation('Géolocalisation non supportée');
+      setUserLocation(t('errors.network'));
       return;
     }
 
@@ -50,16 +52,16 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
           }
         } else {
           setStatus('error');
-          setUserLocation('Coordonnées hôtel manquantes');
+          setUserLocation(t('errors.not_found'));
         }
       },
       (err) => {
         console.error(err);
         setStatus('error');
         if (err.code === 1) {
-          setUserLocation('Accès refusé. Veuillez autoriser la position.');
+          setUserLocation(t('errors.unauthorized'));
         } else {
-          setUserLocation('Erreur GPS ou signal faible');
+          setUserLocation(t('errors.network'));
         }
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -78,8 +80,8 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center space-y-1"
       >
-        <h2 className="text-xl font-bold text-text-primary uppercase tracking-wider">Géolocalisation</h2>
-        <p className="text-[10px] text-text-secondary font-medium uppercase tracking-widest opacity-70">Vérifiez la présence sur site</p>
+        <h2 className="text-xl font-bold text-text-primary uppercase tracking-wider">{t('pointage.geolocation')}</h2>
+        <p className="text-[10px] text-text-secondary font-medium uppercase tracking-widest opacity-70">{t('pointage.check_presence')}</p>
       </motion.div>
 
       {/* Map Visualization */}
@@ -148,7 +150,7 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
             <MapPin size={16} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Adresse de l'établissement</p>
+            <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('profile.service')}</p>
             <p className="text-[10px] font-bold text-text-primary truncate">{activeHotel?.address}</p>
           </div>
         </div>
@@ -167,12 +169,12 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
             {status === 'detecting' ? <Loader2 size={16} className="animate-spin" /> : <Navigation size={16} />}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">Votre position actuelle</p>
+            <p className="text-[8px] font-bold text-text-secondary uppercase tracking-widest">{t('pointage.your_position')}</p>
             <p className={cn(
               "text-[10px] font-bold truncate",
               status === 'detecting' ? "text-text-primary opacity-50 italic" : "text-text-primary"
             )}>
-              {status === 'detecting' ? 'Détection en cours...' : userLocation}
+              {status === 'detecting' ? t('common.loading') : userLocation}
             </p>
           </div>
         </div>
@@ -200,15 +202,15 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
           </div>
           <div className="flex-1">
             <h3 className="font-bold text-sm text-text-primary leading-tight">
-              {status === 'detecting' ? 'Vérification de votre position...' :
-               status === 'success' ? 'Position validée sur site' : 'Position non autorisée'}
+              {status === 'detecting' ? t('common.loading') :
+               status === 'success' ? t('common.done') : t('errors.unauthorized')}
             </h3>
           </div>
         </div>
         <p className="text-[10px] text-text-secondary leading-relaxed font-medium">
-          {status === 'detecting' ? 'Veuillez patienter pendant que nous vérifions votre proximité avec l\'établissement.' :
-           status === 'success' ? 'Vous êtes bien dans la zone autorisée de l\'hôtel. Vous pouvez maintenant procéder au scan.' :
-           'Vous semblez être trop éloigné de l\'hôtel. Le pointage n\'est autorisé que sur place.'}
+          {status === 'detecting' ? t('common.loading') :
+           status === 'success' ? t('common.done') :
+           t('errors.validation')}
         </p>
       </motion.div>
 
@@ -220,7 +222,7 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
             className="w-full py-3 rounded-xl border-2 border-violet text-violet font-bold text-xs uppercase tracking-widest active-tap flex items-center justify-center gap-2"
           >
             <Navigation size={14} />
-            {status === 'detecting' ? 'Forcer la détection' : 'Réessayer la détection'}
+            {status === 'detecting' ? t('common.retry') : t('common.retry')}
           </button>
         )}
         
@@ -235,7 +237,7 @@ export const Geolocation = ({ onConfirm }: GeolocationProps) => {
             status === 'success' ? "bg-violet text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
           )}
         >
-          {status === 'detecting' ? 'Détection...' : 'Ok, compris'}
+          {status === 'detecting' ? t('common.loading') : t('common.confirm')}
           <ChevronRight size={18} />
         </motion.button>
       </div>

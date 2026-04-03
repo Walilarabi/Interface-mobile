@@ -19,13 +19,15 @@ const platformLogos: Record<string, string> = {
   tripadvisor: 'https://www.google.com/s2/favicons?domain=tripadvisor.com&sz=64',
   google: 'https://www.google.com/s2/favicons?domain=google.com&sz=64',
   facebook: 'https://www.google.com/s2/favicons?domain=facebook.com&sz=64',
+  trip: 'https://www.google.com/s2/favicons?domain=trip.com&sz=64',
 };
 
 const platformRatings: Record<string, string> = {
-  tripadvisor: '125/1800',
+  tripadvisor: '4.4',
   booking: '8.8',
   expedia: '8.9',
   google: '4.6',
+  trip: '4.2',
 };
 
 export const CommentCard: React.FC<CommentCardProps> = ({ comment, type, onRead, onRespond, canRespond }) => {
@@ -64,11 +66,6 @@ export const CommentCard: React.FC<CommentCardProps> = ({ comment, type, onRead,
                     className="w-4 h-4 rounded-xs"
                     referrerPolicy="no-referrer"
                   />
-                  {platformRatings[platform.platform] && (
-                    <div className="absolute -top-1.5 -right-2 px-1 py-0.5 rounded-full text-[5px] font-black bg-violet text-white border border-white shadow-xs whitespace-nowrap z-10">
-                      {platformRatings[platform.platform]}
-                    </div>
-                  )}
                 </div>
               )}
               <span className="text-[10px] font-black text-text-primary uppercase tracking-tight">

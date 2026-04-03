@@ -2,6 +2,7 @@ import React from 'react';
 import { Bell, User } from 'lucide-react';
 import { useAuth } from '@/src/hooks/useAuth';
 import { Link, useLocation } from 'react-router-dom';
+import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export const Header = () => {
   const { user } = useAuth();
@@ -10,9 +11,12 @@ export const Header = () => {
 
   return (
     <header className="bg-violet text-white px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-      <button className="active-tap opacity-80">
-        <Bell size={22} />
-      </button>
+      <div className="flex items-center gap-4">
+        <Link to="/notifications" className="active-tap opacity-80">
+          <Bell size={22} />
+        </Link>
+        <LanguageSwitcher />
+      </div>
       <h1 className="font-logo text-2xl font-bold tracking-tight">
         FLOW<span className="text-green">TYM</span>
       </h1>

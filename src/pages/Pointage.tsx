@@ -10,8 +10,10 @@ import { ActionsRH } from '@/src/components/Pointage/ActionsRH';
 import { SoldeConges } from '@/src/components/Pointage/SoldeConges';
 import { ActionForm } from '@/src/components/Pointage/ActionForm';
 import { Geolocation } from '@/src/components/Pointage/Geolocation';
+import { useTranslation } from '@/src/hooks/useTranslation';
 
 export const Pointage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const activeTab = searchParams.get('tab') || 'scanner';
@@ -20,11 +22,11 @@ export const Pointage = () => {
   const [isGeolocated, setIsGeolocated] = useState(false);
 
   const tabs = [
-    { id: 'scanner', label: 'Scanner', icon: Scan },
-    { id: 'historique', label: 'Historique', icon: History },
-    { id: 'planning', label: 'Planning', icon: Calendar },
-    { id: 'actions', label: 'Actions RH', icon: LayoutGrid },
-    { id: 'solde', label: 'Solde', icon: PieChart },
+    { id: 'scanner', label: t('pointage.scanner'), icon: Scan },
+    { id: 'historique', label: t('pointage.history'), icon: History },
+    { id: 'planning', label: t('pointage.planning'), icon: Calendar },
+    { id: 'actions', label: t('pointage.actions'), icon: LayoutGrid },
+    { id: 'solde', label: t('pointage.balance'), icon: PieChart },
   ];
 
   const setTab = (id: string) => {
@@ -47,7 +49,7 @@ export const Pointage = () => {
     }
   };
 
-  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label || 'Pointage';
+  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label || t('pointage.title');
 
   return (
     <div className="h-full flex flex-col bg-background relative overflow-hidden">
@@ -103,8 +105,8 @@ export const Pointage = () => {
             >
               <div className="p-6 border-b border-border flex items-center justify-between bg-violet text-white">
                 <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-widest opacity-70">Menu Module</span>
-                  <span className="text-xl font-bold">Pointage</span>
+                  <span className="text-[10px] uppercase tracking-widest opacity-70">{t('pointage.actions')}</span>
+                  <span className="text-xl font-bold">{t('pointage.title')}</span>
                 </div>
                 <button 
                   onClick={() => setIsMenuOpen(false)}
