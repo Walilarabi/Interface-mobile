@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Clock, LayoutGrid, FileText, User, Sparkles } from 'lucide-react';
+import { Calendar, Clock, LayoutGrid, FileText, User, Sparkles, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
 interface ActionsRHProps {
@@ -14,6 +14,7 @@ export const ActionsRH = ({ onAction }: ActionsRHProps) => {
     { id: 'maladie', label: 'Informer Maladie', icon: LayoutGrid, color: 'bg-red-50 text-red-600', sub: 'Téléversez certificat' },
     { id: 'cp', label: 'Demande de CP', icon: FileText, color: 'bg-green-50 text-green-600', sub: 'Planifiez vos congés' },
     { id: 'extra', label: 'Gestion des Extras', icon: Sparkles, color: 'bg-violet-light text-violet', sub: 'Proposez vos repos' },
+    { id: 'exchange', label: 'Échange de Shift', icon: ArrowLeftRight, color: 'bg-teal-50 text-teal-600', sub: 'Proposez un échange' },
     { id: 'rdv', label: 'Demander un RDV', icon: User, color: 'bg-background text-text-secondary', sub: 'Voir votre manager' },
   ];
 

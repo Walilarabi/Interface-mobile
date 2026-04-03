@@ -15,6 +15,7 @@ import { Commissions } from './pages/Commissions';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Rewards } from './pages/Rewards';
 import { Planning } from './pages/Planning';
+import { Comments } from './pages/Comments';
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/staff" element={<Staff />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/comments" element={<Comments />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

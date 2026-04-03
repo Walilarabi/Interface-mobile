@@ -25,6 +25,7 @@ const SERVICES = [
   { id: 'reception', label: 'Réception', icon: ConciergeBell, color: 'text-blue-500 bg-blue-50' },
   { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'text-orange-500 bg-orange-50' },
   { id: 'direction', label: 'Direction', icon: ShieldCheck, color: 'text-red-500 bg-red-50' },
+  { id: 'staff', label: 'Collaborateurs', icon: UserPlus, color: 'text-pink-500 bg-pink-50' },
 ];
 
 export const Chat = () => {
@@ -61,34 +62,21 @@ export const Chat = () => {
         time: '09:36',
         isMe: true,
         type: 'text'
-      },
-      {
-        id: '3',
-        sender: 'Léa',
-        role: 'Gouvernante',
-        text: 'Parfait, merci Jeanne !',
-        time: '09:36',
-        isMe: false,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lea',
-        type: 'text'
       }
     ],
-    housekeeping: [
-      {
-        id: 'h1',
-        sender: 'Léa',
-        role: 'Gouvernante',
-        text: 'Toutes les chambres du 2ème sont prêtes ?',
-        time: '10:15',
-        isMe: false,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lea',
-        type: 'text'
-      }
-    ],
+    housekeeping: [],
     reception: [],
     maintenance: [],
-    direction: []
+    direction: [],
+    staff: []
   });
+
+  const staffMembers = [
+    { id: '1', name: 'Julien B.', role: 'Réception', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julien' },
+    { id: '2', name: 'Léa M.', role: 'Gouvernante', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lea' },
+    { id: '3', name: 'Thomas R.', role: 'Maintenance', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Thomas' },
+    { id: '6', name: 'Jeanne D.', role: 'F. de chambre', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jeanne' },
+  ];
 
   const handleSend = (text?: string, voiceUrl?: string, duration?: string, type: 'text' | 'voice' | 'broadcast' = 'text', target?: string) => {
     if (type === 'text' && !text?.trim()) return;
@@ -271,7 +259,41 @@ export const Chat = () => {
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar"
       >
-        {(messages[activeService] || []).map((msg) => (
+        {activeService === 'staff' ? (
+          <div className="space-y-4">
+            <div className="bg-pink-50 border border-pink-100 p-4 rounded-2xl mb-6">
+              <p className="text-xs font-bold text-pink-600 mb-1 flex items-center gap-2">
+                <ShieldCheck size={14} />
+                Option réservée au management
+              </p>
+              <p className="text-[10px] text-pink-500 leading-relaxed">
+                Sélectionnez un collaborateur pour lui envoyer une notification ciblée ou un message personnel.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              {staffMembers.map(member => (
+                <button
+                  key={member.id}
+                  onClick={() => {
+                    setActiveService('general'); // Switch to general for now or handle specific chat
+                    setShowBroadcastModal(true);
+                  }}
+                  className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-border hover:border-pink-200 transition-all active-tap text-left"
+                >
+                  <img src={member.avatar} alt="" className="w-10 h-10 rounded-xl" />
+                  <div className="flex-1">
+                    <p className="font-bold text-sm text-text-primary">{member.name}</p>
+                    <p className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">{member.role}</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center">
+                    <Megaphone size={14} />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          (messages[activeService] || []).map((msg) => (
           <motion.div
             key={msg.id}
             initial={{ opacity: 0, y: 10 }}
@@ -340,69 +362,72 @@ export const Chat = () => {
               </>
             )}
           </motion.div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Bottom Container (Input) */}
-      <div className="shrink-0 bg-background/80 backdrop-blur-md border-t border-border p-4 pb-24">
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "flex-1 bg-surface rounded-[24px] border border-border px-4 py-3 flex items-center transition-all",
-            isRecording && "bg-red-50 border-red-200"
-          )}>
-            {isRecording ? (
-              <div className="flex-1 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                  <span className="text-sm font-bold text-red-500 font-mono">{formatTime(recordingTime)}</span>
+      {activeService !== 'staff' && (
+        <div className="shrink-0 bg-background/80 backdrop-blur-md border-t border-border p-4 pb-24">
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "flex-1 bg-surface rounded-[24px] border border-border px-4 py-3 flex items-center transition-all",
+              isRecording && "bg-red-50 border-red-200"
+            )}>
+              {isRecording ? (
+                <div className="flex-1 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    <span className="text-sm font-bold text-red-500 font-mono">{formatTime(recordingTime)}</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Enregistrement...</span>
                 </div>
-                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Enregistrement...</span>
-              </div>
-            ) : (
-              <>
-                <input 
-                  type="text" 
-                  placeholder="Écrire un message..." 
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-text-primary placeholder:text-text-secondary/50"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSend(message)}
-                />
-                {message && (
-                  <button 
-                    onClick={() => setMessage('')}
-                    className="text-violet opacity-50 active-tap"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </>
+              ) : (
+                <>
+                  <input 
+                    type="text" 
+                    placeholder="Écrire un message..." 
+                    className="flex-1 bg-transparent border-none outline-none text-sm text-text-primary placeholder:text-text-secondary/50"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend(message)}
+                  />
+                  {message && (
+                    <button 
+                      onClick={() => setMessage('')}
+                      className="text-violet opacity-50 active-tap"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+            
+            <button 
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+              className={cn(
+                "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all active-tap",
+                isRecording ? "bg-red-500 text-white scale-125" : "bg-violet/10 text-violet"
+              )}
+            >
+              <Mic size={20} />
+            </button>
+
+            {message && !isRecording && (
+              <button 
+                onClick={() => handleSend(message)}
+                className="w-12 h-12 rounded-full bg-violet text-white flex items-center justify-center shadow-lg active-tap"
+              >
+                <Send size={20} />
+              </button>
             )}
           </div>
-          
-          <button 
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-            className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all active-tap",
-              isRecording ? "bg-red-500 text-white scale-125" : "bg-violet/10 text-violet"
-            )}
-          >
-            <Mic size={20} />
-          </button>
-
-          {message && !isRecording && (
-            <button 
-              onClick={() => handleSend(message)}
-              className="w-12 h-12 rounded-full bg-violet text-white flex items-center justify-center shadow-lg active-tap"
-            >
-              <Send size={20} />
-            </button>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Broadcast Modal */}
       <AnimatePresence>

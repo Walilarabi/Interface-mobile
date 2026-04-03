@@ -30,21 +30,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const login = (email: string) => {
-    const mockUser: User = {
-      id: 'user_1',
-      hotel_id: 'hotel_1',
-      hotel_ids: ['hotel_1', 'hotel_2', 'hotel_3', 'hotel_4', 'hotel_5', 'hotel_6'],
-      primary_hotel_id: 'hotel_1',
-      email: email,
-      role: email.includes('direction') ? 'direction' : 'femme_chambre',
-      first_name: email.split('@')[0],
-      last_name: 'Staff',
-      is_active: true,
-      off_days: [0, 6] // Default to weekends
-    };
-    localStorage.setItem('flowtym_user', JSON.stringify(mockUser));
-    setUser(mockUser);
+  const login = async (email: string) => {
+    setLoading(true);
+    try {
+      // services/api.js – Client Axios unifié
+      // apiClient.post('/auth/magic-link', { email })
+      
+      // Simulating Magic Link send
+      console.log(`Magic link sent to ${email}`);
+      
+      // Simulating validation and JWT reception
+      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+      localStorage.setItem('access_token', mockToken);
+
+      const mockUser: User = {
+        id: 'user_1',
+        hotel_id: 'hotel_1',
+        hotel_ids: ['hotel_1', 'hotel_2', 'hotel_3', 'hotel_4', 'hotel_5', 'hotel_6'],
+        primary_hotel_id: 'hotel_1',
+        email: email,
+        role: email.includes('direction') ? 'direction' : 'femme_chambre',
+        first_name: email.split('@')[0],
+        last_name: 'Staff',
+        is_active: true,
+        off_days: [0, 6] // Default to weekends
+      };
+      localStorage.setItem('flowtym_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {

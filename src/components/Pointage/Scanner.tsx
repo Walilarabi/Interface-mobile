@@ -3,9 +3,13 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { motion } from 'motion/react';
 import { CheckCircle2, AlertCircle, MapPin, Briefcase, Clock } from 'lucide-react';
 import { useHotel } from '@/src/hooks/useHotel';
+import { useStaff } from '@/src/hooks/useStaff';
+import { useAuth } from '@/src/hooks/useAuth';
 
 export const Scanner = () => {
   const { hotels, setActiveHotel, activeHotel } = useHotel();
+  const { user } = useAuth();
+  const { startPointage, endPointage, loading } = useStaff(user?.id || '');
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [scanTime, setScanTime] = useState<string | null>(null);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -52,6 +56,57 @@ export const Scanner = () => {
     }
   };
 
+  const handleScanSuccess = async (decodedText: string) => {
+    const hotel = hotels.find(h => h.qr_code === decodedText);
+    if (hotel) {
+      // Check proximity
+      if (location && hotel.latitude && hotel.longitude) {
+        const distance = calculateDistance(
+          location.lat, 
+          location.lng, 
+          hotel.latitude, 
+          hotel.longitude
+        );
+
+        // Allow scan if within 200 meters
+        if (distance <= 200) {
+          try {
+            // Call API for pointage
+            await startPointage(decodedText, location);
+            
+            setActiveHotel(hotel.id);
+            setScanResult(hotel.name);
+            setScanTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+            if (scannerRef.current) {
+              scannerRef.current.clear();
+            }
+          } catch (err) {
+            setError("Erreur lors de l'enregistrement du pointage.");
+          }
+        } else {
+          setError(`Vous êtes trop loin de l'établissement (${Math.round(distance)}m). Le pointage doit se faire sur place.`);
+        }
+      } else if (!location) {
+        setError("Attente de la géolocalisation...");
+      } else {
+        // If hotel has no coordinates, allow for demo but warn
+        try {
+          await startPointage(decodedText, location);
+          setActiveHotel(hotel.id);
+          setScanResult(hotel.name);
+          setScanTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+          if (scannerRef.current) {
+            scannerRef.current.clear();
+          }
+        } catch (err) {
+          setError("Erreur lors de l'enregistrement du pointage.");
+        }
+      }
+    } else {
+      setError("QR Code non reconnu pour cet établissement.");
+    }
+  };
+
   useEffect(() => {
     requestLocation();
 
@@ -63,44 +118,7 @@ export const Scanner = () => {
     );
 
     scannerRef.current.render(
-      (decodedText) => {
-        const hotel = hotels.find(h => h.qr_code === decodedText);
-        if (hotel) {
-          // Check proximity
-          if (location && hotel.latitude && hotel.longitude) {
-            const distance = calculateDistance(
-              location.lat, 
-              location.lng, 
-              hotel.latitude, 
-              hotel.longitude
-            );
-
-            // Allow scan if within 200 meters
-            if (distance <= 200) {
-              setActiveHotel(hotel.id);
-              setScanResult(hotel.name);
-              setScanTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-              if (scannerRef.current) {
-                scannerRef.current.clear();
-              }
-            } else {
-              setError(`Vous êtes trop loin de l'établissement (${Math.round(distance)}m). Le pointage doit se faire sur place.`);
-            }
-          } else if (!location) {
-            setError("Attente de la géolocalisation...");
-          } else {
-            // If hotel has no coordinates, allow for demo but warn
-            setActiveHotel(hotel.id);
-            setScanResult(hotel.name);
-            setScanTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-            if (scannerRef.current) {
-              scannerRef.current.clear();
-            }
-          }
-        } else {
-          setError("QR Code non reconnu pour cet établissement.");
-        }
-      },
+      (decodedText) => handleScanSuccess(decodedText),
       (errorMessage) => {
         // console.log(errorMessage);
       }

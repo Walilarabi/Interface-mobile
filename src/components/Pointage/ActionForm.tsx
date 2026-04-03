@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Calendar, Clock, FileText, Send, CheckCircle2, User, AlertCircle, ChevronLeft, ChevronRight, PlusCircle, Sparkles } from 'lucide-react';
+import { X, Calendar, Clock, FileText, Send, CheckCircle2, User, AlertCircle, ChevronLeft, ChevronRight, PlusCircle, Sparkles, ArrowLeftRight } from 'lucide-react';
 import { useAuth } from '@/src/hooks/useAuth';
 import { cn } from '@/src/lib/utils';
+import { useStaff } from '@/src/hooks/useStaff';
 
 interface ActionFormProps {
   type: string;
@@ -12,6 +13,7 @@ interface ActionFormProps {
 
 export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
   const { user } = useAuth();
+  const { requestCP, requestOff, requestRetard, requestMaladie, loading: staffLoading } = useStaff(user?.id || '');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -103,6 +105,13 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
           buttonText: 'Confirmer',
           illustration: '🤝'
         };
+      case 'exchange':
+        return {
+          title: 'Échange de Shift',
+          subtitle: 'Proposez un échange avec un collègue',
+          buttonText: 'Proposer l\'échange',
+          illustration: '🔄'
+        };
       default:
         return {
           title: 'Action RH',
@@ -115,16 +124,31 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
 
   const details = getActionDetails();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    console.log('Submitting HR Request:', { type, ...formData, cpDetails });
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    
+    try {
+      if (type === 'cp') {
+        await requestCP({ startDate: formData.startDate, endDate: formData.endDate });
+      } else if (type === 'off') {
+        await requestOff({ date: formData.date, comment: formData.comment });
+      } else if (type === 'retard') {
+        await requestRetard({ time: formData.time, comment: formData.comment });
+      } else if (type === 'maladie') {
+        const fd = new FormData();
+        if (formData.file) fd.append('certificate', formData.file);
+        fd.append('comment', formData.comment);
+        await requestMaladie(fd);
+      }
+      
       setSubmitted(true);
       setTimeout(onSuccess, 2000);
-    }, 1500);
+    } catch (err) {
+      console.error('Action failed:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleExtraDate = (dateStr: string) => {
@@ -242,6 +266,48 @@ export const ActionForm = ({ type, onClose, onSuccess }: ActionFormProps) => {
                 </p>
               </motion.div>
             )}
+          </div>
+        ) : type === 'exchange' ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Date du shift</label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
+                  <input 
+                    type="date" 
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Heure du shift</label>
+                <div className="relative">
+                  <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
+                  <input 
+                    type="time" 
+                    value={formData.time}
+                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                    className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Avec quel collègue ? (Optionnel)</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-violet opacity-40" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Nom du collègue..."
+                  className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet/20"
+                />
+              </div>
+            </div>
           </div>
         ) : type === 'extra' ? (
           <div className="space-y-6">

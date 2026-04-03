@@ -2,17 +2,50 @@ import React, { useState } from 'react';
 import { useAuth } from '@/src/hooks/useAuth';
 import { Mail, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { cn } from '@/src/lib/utils';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
-  const { login } = useAuth();
+  const [isSent, setIsSent] = useState(false);
+  const { login, loading } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      login(email);
+      await login(email);
+      setIsSent(true);
     }
   };
+
+  if (isSent) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-surface p-10 rounded-[40px] card-shadow w-full max-w-md text-center space-y-6 border border-violet/10"
+        >
+          <div className="w-20 h-20 bg-violet-light rounded-3xl flex items-center justify-center text-violet mx-auto shadow-inner">
+            <Mail size={40} strokeWidth={1.5} />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-text-primary tracking-tight">Lien envoyé !</h2>
+            <p className="text-text-secondary text-sm leading-relaxed">
+              Consultez votre boîte mail <span className="font-bold text-violet">{email}</span> pour vous connecter.
+            </p>
+          </div>
+          <div className="pt-4">
+            <button 
+              onClick={() => setIsSent(false)}
+              className="text-xs font-bold text-violet uppercase tracking-widest active-tap px-6 py-3 rounded-xl hover:bg-violet-light transition-colors"
+            >
+              Modifier l'email
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
@@ -22,41 +55,49 @@ export const Login = () => {
         className="w-full max-w-md text-center"
       >
         <div className="mb-12">
-          <h1 className="font-logo text-5xl text-violet mb-2">FLOWTYM</h1>
-          <p className="text-text-secondary">Pilotage opérationnel hôtelier</p>
+          <h1 className="font-logo text-5xl text-violet mb-2 tracking-tighter">FLOWTYM</h1>
+          <p className="text-text-secondary font-medium tracking-wide uppercase text-[10px]">Pilotage opérationnel hôtelier</p>
         </div>
 
-        <div className="bg-surface p-8 rounded-[32px] card-shadow w-full">
-          <h2 className="text-2xl font-bold text-text-primary mb-6">Connexion</h2>
-          <p className="text-text-secondary text-sm mb-8">
-            Saisissez votre email professionnel pour recevoir un lien de connexion.
+        <div className="bg-surface p-8 rounded-[32px] card-shadow w-full border border-border/50">
+          <h2 className="text-2xl font-black text-text-primary mb-6 tracking-tight">Connexion</h2>
+          <p className="text-text-secondary text-sm mb-8 leading-relaxed">
+            Saisissez votre email professionnel pour recevoir un lien de connexion magique.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={20} />
+            <div className="relative group">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-violet transition-colors" size={20} />
               <input
                 type="email"
                 placeholder="votre@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-violet/20 focus:border-violet transition-all"
+                className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-4 focus:ring-violet/10 focus:border-violet transition-all font-medium"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-violet text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 active-tap hover:bg-violet-dark transition-colors"
+              disabled={loading}
+              className={cn(
+                "w-full bg-violet text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 active-tap hover:bg-violet-dark transition-all shadow-lg shadow-violet/20",
+                loading && "opacity-70 cursor-not-allowed"
+              )}
             >
-              Recevoir le lien <ArrowRight size={20} />
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>Recevoir le lien <ArrowRight size={20} /></>
+              )}
             </button>
           </form>
         </div>
 
-        <p className="mt-12 text-xs text-text-secondary leading-relaxed">
+        <p className="mt-12 text-[10px] text-text-secondary leading-relaxed font-bold uppercase tracking-widest opacity-60">
           En vous connectant, vous acceptez nos <br />
-          <span className="underline">Conditions d'Utilisation</span> et notre <span className="underline">Politique de Confidentialité</span>.
+          <span className="underline decoration-violet/30 underline-offset-4">Conditions d'Utilisation</span> et notre <span className="underline decoration-violet/30 underline-offset-4">Politique de Confidentialité</span>.
         </p>
       </motion.div>
     </div>

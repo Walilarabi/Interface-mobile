@@ -1,20 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Trophy, Star, TrendingUp, ChevronLeft, Award, Target, Clock, User, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/hooks/useAuth';
+import { useStaff } from '@/src/hooks/useStaff';
 
 export const Performance = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getRanking, getScore, loading } = useStaff(user?.id || '');
+  const [ranking, setRanking] = useState<any[]>([]);
+  const [userScore, setUserScore] = useState<number>(0);
 
-  const ranking = [
-    { name: 'Lâvia', score: 89, photo: null },
-    { name: 'Jovanna B.', score: 89, photo: null },
-    { name: 'Clara L.', score: 82, photo: null },
-    { name: 'Thomas R.', score: 80, photo: null },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [rankingData, scoreData] = await Promise.all([
+          getRanking(),
+          getScore()
+        ]);
+        setRanking(rankingData);
+        setUserScore(scoreData.score);
+      } catch (err) {
+        console.error('Failed to load performance data:', err);
+      }
+    };
+    loadData();
+  }, []);
 
   return (
     <div className="pb-24 min-h-screen bg-background overflow-y-auto no-scrollbar">
@@ -50,17 +63,17 @@ export const Performance = () => {
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-[20px] bg-violet-light border-2 border-violet/20 flex items-center justify-center text-violet overflow-hidden shadow-sm">
               {user?.profile_photo ? (
-                <img src={user.profile_photo} alt="Profile" className="w-full h-full object-cover" />
+                <img src={user.profile_photo} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 <User size={32} />
               )}
             </div>
             <div>
               <h3 className="text-lg font-bold text-text-primary">{user?.first_name} {user?.last_name?.charAt(0)}.</h3>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Top performer du mois</p>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Votre score actuel</p>
             </div>
             <div className="ml-auto text-right">
-              <p className="text-3xl font-bold text-violet">95</p>
+              <p className="text-3xl font-bold text-violet">{userScore}</p>
             </div>
           </div>
 
@@ -79,28 +92,43 @@ export const Performance = () => {
 
         {/* Ranking List */}
         <div className="space-y-3">
-          {ranking.map((item, i) => (
-            <div key={i} className="bg-surface p-3 rounded-[20px] card-shadow flex items-center justify-between border border-border/30">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-text-secondary w-4">{i + 1}.</span>
-                <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center text-text-secondary overflow-hidden">
-                  <User size={16} className="opacity-20" />
-                </div>
-                <div>
-                  <p className="font-bold text-sm text-text-primary">{item.name}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-[9px] text-text-secondary font-bold uppercase tracking-widest opacity-40">Score:</span>
-                <span className="font-bold text-sm text-text-primary">{item.score}</span>
-              </div>
+          <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-2">Classement de l'équipe</h4>
+          {loading && ranking.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 space-y-4">
+              <div className="w-8 h-8 border-4 border-violet border-t-transparent rounded-full animate-spin" />
+              <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Chargement du classement...</p>
             </div>
-          ))}
+          ) : (
+            ranking.map((item, i) => (
+              <div key={i} className="bg-surface p-3 rounded-[20px] card-shadow flex items-center justify-between border border-border/30">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-text-secondary w-4">{i + 1}.</span>
+                  <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center text-text-secondary overflow-hidden">
+                    {item.photo ? (
+                      <img src={item.photo} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <User size={16} className="opacity-20" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-text-primary">{item.name}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[9px] text-text-secondary font-bold uppercase tracking-widest opacity-40">Score:</span>
+                  <span className="font-bold text-sm text-text-primary">{item.score}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Action Button */}
-        <button className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20">
-          Voir mon score
+        <button 
+          onClick={() => navigate('/pointage?tab=solde')}
+          className="w-full bg-violet text-white py-4 rounded-[24px] font-bold active-tap card-shadow shadow-violet/20"
+        >
+          Voir mes détails
         </button>
       </div>
     </div>

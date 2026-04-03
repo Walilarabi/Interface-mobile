@@ -1,101 +1,89 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/src/hooks/useAuth';
-import { Clock, Briefcase, Trophy, ChevronRight, Scan, Bell, MapPin, ConciergeBell, Users, MessageSquare, WifiOff, TrendingUp, Target, Award, User, Play, Pause, Square, Star, Calendar as CalendarIcon, Eye, QrCode, Sparkles, LayoutGrid, X } from 'lucide-react';
+import { Clock, Briefcase, Trophy, ChevronRight, Bell, MapPin, ConciergeBell, MessageSquare, TrendingUp, Target, Award, User, Star, Calendar as CalendarIcon, Eye, QrCode, X, Pause, Square } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
-import { OfflineMode } from '@/src/components/OfflineMode';
 import { useHotel } from '@/src/hooks/useHotel';
 import { NotificationCenter } from '@/src/components/Profile/NotificationCenter';
+import { useStaff } from '@/src/hooks/useStaff';
+import { useComments } from '@/src/hooks/useComments';
 
 export const Dashboard = () => {
   const { user } = useAuth();
   const { activeHotel, hotels, setActiveHotel } = useHotel();
-  const [showHotelSelector, setShowHotelSelector] = React.useState(false);
-  const [showNotifications, setShowNotifications] = React.useState(false);
-  const [isOffline, setIsOffline] = React.useState(false);
-  const [showCoupDeilModal, setShowCoupDeilModal] = React.useState(false);
-  const [showMaJournee, setShowMaJournee] = React.useState(true);
-  
-  // Live Status State
-  const [isOnDuty, setIsOnDuty] = React.useState(false);
-  const [startTime] = React.useState(new Date(Date.now() - 3.5 * 60 * 60 * 1000)); 
-  const [elapsedTime, setElapsedTime] = React.useState('');
+  const [showHotelSelector, setShowHotelSelector] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showCoupDeilModal, setShowCoupDeilModal] = useState(false);
+  const [isOnDuty, setIsOnDuty] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState('00:00:00');
+  const [showMaJournee, setShowMaJournee] = useState(true);
 
-  React.useEffect(() => {
-    if (!isOnDuty) return;
-    
-    const updateTimer = () => {
-      const diff = Date.now() - startTime.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      setElapsedTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-    };
+  // Functional logic integration
+  const { getScore, getNotifications, loading: staffLoading } = useStaff(user?.id || '');
+  const { score: satisfactionScore, loading: commentsLoading } = useComments();
+  const [userScore, setUserScore] = useState<any>(null);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
+  useEffect(() => {
+    if (user?.id) {
+      loadDashboardData();
+    }
+  }, [user?.id]);
+
+  const loadDashboardData = async () => {
+    try {
+      const [scoreData, notificationsData] = await Promise.all([
+        getScore(),
+        getNotifications(true)
+      ]);
+      setUserScore(scoreData);
+      setUnreadNotificationsCount(notificationsData?.length || 0);
+    } catch (err) {
+      console.error('Error loading dashboard data:', err);
+    }
+  };
+
+  useEffect(() => {
+    let interval: any;
+    if (isOnDuty) {
+      const startTime = Date.now();
+      interval = setInterval(() => {
+        const now = Date.now();
+        const diff = now - startTime;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        setElapsedTime(
+          `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+        );
+      }, 1000);
+    } else {
+      setElapsedTime('00:00:00');
+    }
     return () => clearInterval(interval);
-  }, [isOnDuty, startTime]);
-
-  if (isOffline) {
-    return <OfflineMode onDismiss={() => setIsOffline(false)} />;
-  }
-
+  }, [isOnDuty]);
+  
   const MaJourneeBlock = ({ compact = false }: { compact?: boolean }) => (
     <div className={cn("bg-white rounded-[24px] shadow-sm border border-border/30 p-4 space-y-3", compact && "p-3")}>
-      {!compact && (
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-violet/5 flex flex-col items-center justify-center text-violet border border-violet/10">
-              <span className="text-[6px] font-black uppercase">Avr</span>
-              <span className="text-xs font-black leading-none">02</span>
-            </div>
-            <p className="text-[10px] font-bold text-text-primary">Progression du jour</p>
-          </div>
-          <p className="text-[10px] font-black text-violet">65%</p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-[#4CAF50]" />
+          <p className="text-xs font-bold text-text-primary">08:00 — Folkestone Opera (5 rooms)</p>
         </div>
-      )}
-      
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-        <motion.div 
-          initial={{ width: 0 }}
-          animate={{ width: '65%' }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="h-full bg-linear-to-r from-violet to-green rounded-full"
-        />
-      </div>
-
-      <div className="space-y-2 pt-1">
-        <div className="flex items-center gap-3 relative">
-          <div className="absolute left-[5px] top-3 bottom-0 w-[1px] bg-gray-100" />
-          <div className="w-2.5 h-2.5 rounded-full bg-violet border-2 border-white shadow-sm z-10" />
-          <div className="flex-1 bg-gray-50/50 p-2 rounded-xl border border-border/30 flex items-center justify-between">
-            <div>
-              <p className="text-[8px] font-black text-violet uppercase tracking-widest">09:00</p>
-              <p className="text-[10px] font-bold text-text-primary truncate max-w-[120px]">{activeHotel?.name}</p>
-            </div>
-            <span className="text-[8px] font-bold text-text-secondary">5 ch.</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3 relative">
-          <div className="w-2.5 h-2.5 rounded-full bg-gray-200 border-2 border-white shadow-sm z-10" />
-          <div className="flex-1 bg-white p-2 rounded-xl border border-border/30 flex items-center justify-between opacity-60">
-            <div>
-              <p className="text-[8px] font-black text-text-secondary uppercase tracking-widest">14:00</p>
-              <p className="text-[10px] font-bold text-text-primary">Hôtel Opera</p>
-            </div>
-            <span className="text-[8px] font-bold text-text-secondary">10 ch.</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-[#00BFA5]" />
+          <p className="text-xs font-bold text-text-primary">14:00 — Central Hotel (10 rooms)</p>
         </div>
       </div>
     </div>
   );
 
+  const isManager = ['admin', 'manager', 'director', 'responsable'].includes(user?.role || '');
+
   return (
-    <div className="h-full flex flex-col bg-[#F8FAFC] overflow-hidden pb-20">
-      {/* 🔝 1. Header (compact & premium) */}
+    <div className="h-full flex flex-col bg-background overflow-hidden pb-20">
+      {/* 🔝 1. Header (Compact & Logo-Matched) */}
       <div className="bg-linear-to-br from-violet to-violet-dark text-white px-5 pt-4 pb-6 rounded-b-[32px] relative shrink-0 z-30 shadow-xl overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-24 -mt-24 blur-3xl opacity-40 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-green/10 rounded-full -ml-16 -mb-16 blur-2xl opacity-30"></div>
@@ -110,7 +98,7 @@ export const Dashboard = () => {
               className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 active-tap max-w-[160px]"
             >
               <MapPin size={9} className="text-green shrink-0" />
-              <span className="text-[9px] font-bold tracking-wide truncate">{activeHotel?.name}</span>
+              <span className="text-[9px] font-bold tracking-wide truncate">{activeHotel?.name || 'Sélectionner un hôtel'}</span>
               <ChevronRight size={9} className="shrink-0 opacity-50" />
             </button>
           </div>
@@ -121,7 +109,9 @@ export const Dashboard = () => {
               className="w-8 h-8 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10 active-tap relative"
             >
               <Bell size={16} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-violet" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-violet" />
+              )}
             </button>
             <Link to="/profile" className="active-tap">
               <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden border border-white/20 shadow-lg">
@@ -142,9 +132,9 @@ export const Dashboard = () => {
       </div>
 
       {/* Content Section */}
-      <div className="px-5 -mt-3 space-y-4 flex-1 overflow-y-auto no-scrollbar relative z-20 pb-4">
+      <div className="px-5 -mt-3 space-y-3 flex-1 overflow-y-auto no-scrollbar relative z-20 pb-4">
         
-        {/* ⚡ 2. Action principale (Pointage) */}
+        {/* ⚡ 2. Action principale (Pointage) - Ultra Compact & Single Line */}
         {!isOnDuty ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -153,7 +143,7 @@ export const Dashboard = () => {
           >
             <Link 
               to="/pointage" 
-              className="block bg-linear-to-br from-violet to-green p-4 rounded-[24px] shadow-lg relative overflow-hidden active-tap group border border-white/10"
+              className="block bg-linear-to-r from-violet to-green p-2.5 rounded-[18px] shadow-lg relative overflow-hidden active-tap group border border-white/10"
             >
               <motion.div 
                 animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -161,15 +151,17 @@ export const Dashboard = () => {
                 className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-10 -mt-10 blur-2xl"
               />
               
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-xl rounded-xl flex items-center justify-center border border-white/30 shadow-xl">
-                  <QrCode size={24} className="text-white" />
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="w-8 h-8 bg-white/20 backdrop-blur-xl rounded-lg flex items-center justify-center border border-white/30 shadow-xl">
+                  <QrCode size={16} className="text-white" />
                 </div>
                 <div className="flex-1 text-white">
-                  <h3 className="text-base font-black leading-tight tracking-tight">Pointer maintenant</h3>
-                  <p className="text-white/80 text-[10px] font-medium">Scanner pour démarrer votre service</p>
+                  <h3 className="text-[11px] font-black leading-none tracking-tight whitespace-nowrap">Pointer maintenant</h3>
                 </div>
-                <ChevronRight size={18} className="text-white opacity-60" />
+                <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-full border border-white/10">
+                  <span className="text-[7px] font-black uppercase tracking-widest">Scanner</span>
+                  <ChevronRight size={10} className="text-white opacity-60" />
+                </div>
               </div>
             </Link>
           </motion.div>
@@ -177,34 +169,34 @@ export const Dashboard = () => {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-4 rounded-[24px] shadow-md border border-green/20 flex items-center justify-between relative overflow-hidden"
+            className="bg-white p-2 rounded-[18px] shadow-md border border-green/20 flex items-center justify-between relative overflow-hidden"
           >
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-green/10 flex items-center justify-center text-green relative">
-                <Clock size={20} />
-                <span className="absolute top-0 right-0 w-2 h-2 bg-green rounded-full border-2 border-white animate-pulse" />
+            <div className="flex items-center gap-2.5 relative z-10">
+              <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green relative">
+                <Clock size={14} />
+                <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-green rounded-full border-2 border-white animate-pulse" />
               </div>
               <div>
-                <p className="text-[8px] font-black text-green uppercase tracking-widest">En poste</p>
-                <p className="text-lg font-black text-text-primary font-mono tracking-tighter">{elapsedTime}</p>
+                <p className="text-[6px] font-black text-green uppercase tracking-widest">En poste</p>
+                <p className="text-sm font-black text-text-primary font-mono tracking-tighter">{elapsedTime}</p>
               </div>
             </div>
-            <div className="flex gap-2 relative z-10">
-              <button className="w-10 h-10 rounded-xl bg-gray-50 border border-border/50 flex items-center justify-center text-text-secondary active-tap">
-                <Pause size={16} />
+            <div className="flex gap-1 relative z-10">
+              <button className="w-7 h-7 rounded-lg bg-gray-50 border border-border/50 flex items-center justify-center text-text-secondary active-tap">
+                <Pause size={10} />
               </button>
               <button 
                 onClick={() => setIsOnDuty(false)}
-                className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center active-tap"
+                className="w-7 h-7 rounded-lg bg-red-500 text-white flex items-center justify-center active-tap"
               >
-                <Square size={14} fill="currentColor" />
+                <Square size={8} fill="currentColor" />
               </button>
             </div>
           </motion.div>
         )}
 
-        {/* 📅 3. Bloc intelligent (Ma journée) - Placé juste en bas de la carte pointer */}
-        <div className="space-y-2">
+        {/* 📅 3. Bloc intelligent (Ma journée) - Compact */}
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Ma journée</h3>
             <div className="flex items-center gap-2">
@@ -230,46 +222,97 @@ export const Dashboard = () => {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <MaJourneeBlock />
+                <MaJourneeBlock compact />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* 🧩 4. Modules métiers (grille équilibrée) */}
-        <div className="space-y-2">
+        {/* 🧩 4. Modules métiers - Compact Grid */}
+        <div className="space-y-1.5">
           <h3 className="text-[9px] font-black text-text-secondary px-2 uppercase tracking-widest">Modules métiers</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             {[
-              { id: 'housekeeping', label: 'Housekeeping', sub: 'Chambres', icon: Briefcase, color: 'bg-green-50 text-green', path: '/housekeeping' },
-              { id: 'conciergerie', label: 'Conciergerie', sub: 'Clients', icon: ConciergeBell, color: 'bg-blue-50 text-blue-500', soon: true },
-              { id: 'performance', label: 'Performance', sub: 'Objectifs', icon: Trophy, color: 'bg-violet-50 text-violet', path: '/performance' },
-              { id: 'commissions', label: 'Commissions', sub: 'Gains', icon: TrendingUp, color: 'bg-teal-50 text-teal-600', path: '/commissions' },
-              { id: 'rewards', label: 'Récompenses', sub: 'Cadeaux', icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
-              { id: 'admin', label: 'Admin', sub: 'Équipe', icon: Target, color: 'bg-slate-50 text-slate-600', path: '/admin-dashboard' },
+              { id: 'housekeeping', label: 'Housekeeping', sub: 'Chambres', icon: Briefcase, color: 'bg-green-50 text-green', path: '/housekeeping', soon: false },
+              { id: 'chat', label: 'Chat Équipe', sub: 'Messages', icon: MessageSquare, color: 'bg-violet-50 text-violet', path: '/chat', soon: false },
+              { id: 'performance', label: 'Performance', sub: 'Objectifs', icon: Trophy, color: 'bg-violet-50 text-violet', path: '/performance', soon: false },
+              { id: 'commissions', label: 'Commissions', sub: 'Gains', icon: TrendingUp, color: 'bg-teal-50 text-teal-600', path: '/commissions', soon: false },
             ].map((module) => (
               <Link 
                 key={module.id}
                 to={module.path || '#'}
                 className={cn(
-                  "bg-white p-3 rounded-[24px] shadow-sm border border-border/30 flex flex-col gap-2 active-tap relative group overflow-hidden",
-                  module.soon && "opacity-80 grayscale-[0.5]"
+                  "bg-white p-2.5 rounded-[20px] shadow-sm border border-border/30 flex flex-col gap-1.5 active-tap relative group overflow-hidden"
                 )}
               >
-                {module.soon && (
-                  <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-violet-light text-violet text-[5px] font-black rounded-full uppercase tracking-widest">Bientôt</div>
-                )}
-                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", module.color)}>
-                  <module.icon size={18} strokeWidth={1.5} />
+                <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", module.color)}>
+                  <module.icon size={14} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-[11px] text-text-primary leading-none">{module.label}</h3>
+                  <h3 className="font-bold text-[10px] text-text-primary leading-none">{module.label}</h3>
                   <p className="text-[8px] text-text-secondary font-medium mt-0.5">{module.sub}</p>
                 </div>
               </Link>
             ))}
           </div>
         </div>
+
+        {/* 📊 5. Performance & Suivi (Manager Only) */}
+        {isManager ? (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Performance & suivi</h3>
+              <span className="text-[8px] font-bold text-text-secondary">Vue Manager</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              {[
+                { id: 'admin', label: 'Admin', sub: 'Équipe', icon: Target, color: 'bg-slate-50 text-slate-600', path: '/admin-dashboard' },
+                { id: 'rewards', label: 'Récompenses', sub: 'Badges & Bonus', icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
+              ].map((module) => (
+                <Link 
+                  key={module.id}
+                  to={module.path || '#'}
+                  className="bg-white p-2.5 rounded-[20px] shadow-sm border border-border/30 flex flex-col gap-1.5 active-tap"
+                >
+                  <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", module.color)}>
+                    <module.icon size={14} strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[10px] text-text-primary leading-none">{module.label}</h3>
+                    <p className="text-[8px] text-text-secondary font-medium mt-0.5">{module.sub}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Mes Objectifs</h3>
+              <span className="text-[8px] font-bold text-text-secondary">Top performer du jour</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              {[
+                { id: 'rewards', label: 'Récompenses', sub: 'Mes Badges', icon: Award, color: 'bg-orange-50 text-orange-500', path: '/rewards' },
+                { id: 'performance_perso', label: 'Ma Qualité', sub: 'Score & Avis', icon: Star, color: 'bg-yellow-50 text-yellow-600', path: '/performance' },
+              ].map((module) => (
+                <Link 
+                  key={module.id}
+                  to={module.path || '#'}
+                  className="bg-white p-2.5 rounded-[20px] shadow-sm border border-border/30 flex flex-col gap-1.5 active-tap"
+                >
+                  <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", module.color)}>
+                    <module.icon size={14} strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[10px] text-text-primary leading-none">{module.label}</h3>
+                    <p className="text-[8px] text-text-secondary font-medium mt-0.5">{module.sub}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Coup d'Œil Button */}
         <button 
